@@ -9,3 +9,5 @@
 ## Run tests
 
 in project folder: `$ pytest`
+
+circleci
