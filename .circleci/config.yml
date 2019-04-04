@@ -92,7 +92,7 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
       - run:
-          name: aqa-python run tests
+          name: run tests
           command: |
             . venv/bin/activate
             pytest
@@ -100,14 +100,3 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
-
-#workflows:
-#  version: 2
-#  build-deploy:
-#    jobs:
-#      - test:
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              only: /.*/
