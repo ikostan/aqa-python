@@ -100,3 +100,14 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+#workflows:
+#  version: 2
+#  build-deploy:
+#    jobs:
+#      - test:
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              only: /.*/
