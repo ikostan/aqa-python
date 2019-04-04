@@ -31,6 +31,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
+            cd ~/aqa-python
             pip install -r requirements.txt
 
       - save_cache:
