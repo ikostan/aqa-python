@@ -26,3 +26,23 @@ def test_none_argument_gets_value_as_list():
 def test_none_argument_gets_list_length_0():
     actual_seq = fibonacci.generateFibonacci(None)
     assert len(actual_seq) == 0
+
+
+def test_0_argument_gets_value_as_list():
+    actual_seq = fibonacci.generateFibonacci(0)
+    assert isinstance(actual_seq, list)
+
+
+def test_0_argument_gets_list_length_0():
+    actual_seq = fibonacci.generateFibonacci(0)
+    assert len(actual_seq) == 0
+
+
+def test_1_argument_gets_value_as_list():
+    actual_seq = fibonacci.generateFibonacci(1)
+    assert actual_seq[0] == 1
+
+
+def test_1_argument_gets_list_length_1():
+    actual_seq = fibonacci.generateFibonacci(1)
+    assert len(actual_seq) == 1
