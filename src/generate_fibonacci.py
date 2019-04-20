@@ -1,4 +1,4 @@
-def generateFibonacci(length=0):
+def generate_fibonacci(length=0):
     f_list = []
     if length is not None:
         f_1 = 0
@@ -11,9 +11,9 @@ def generateFibonacci(length=0):
     return f_list
 
 
-def printFibonacci(length=10):
-    print(generateFibonacci(length))
+def print_fibonacci(length=10):
+    print(generate_fibonacci(length))
 
 
 if __name__ == '__main__':
-    printFibonacci(10)
+    print_fibonacci(10)
