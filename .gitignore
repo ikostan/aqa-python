@@ -4,3 +4,4 @@
 __pycache__
 venv/
 samples/json/*.json
+tests/samples/json/*.json
