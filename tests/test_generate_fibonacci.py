@@ -1,4 +1,4 @@
-import fibonacci
+from src import fibonacci
 
 
 def test_sequence():
