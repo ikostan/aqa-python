@@ -50,11 +50,11 @@ class Data_File_Processor:
         persons_list = python_structure[upper_level_key_name]
         for update_object in update_data_list:
             key_name = update_object["key_name"]
-            old_value_contains = update_object["old_value_contains"]
+            original_value_substring = update_object["original_value_substring"]
             new_value = update_object["new_value"]
             for person in persons_list:
                 if key_name in person:
-                    if old_value_contains in person[key_name]:
+                    if original_value_substring in person[key_name]:
                         person[key_name] = new_value
         python_structure[upper_level_key_name] = persons_list
         return python_structure
@@ -71,16 +71,17 @@ class Data_File_Processor:
 
 if __name__ == '__main__':
     new_values = (
-        {'key_name': 'first_name', 'old_value_contains': 'YOUR_', 'new_value': 'Dmitry'},
-        {'key_name': 'last_name', 'old_value_contains': 'YOUR_', 'new_value': 'Naumov'},
-        {'key_name': 'year_of_birth', 'old_value_contains': 'YOUR_', 'new_value': '1973'},
-        {'key_name': 'month_of_birth', 'old_value_contains': 'YOUR_', 'new_value': 'Oct'},
-        {'key_name': 'day_of_birth', 'old_value_contains': 'YOUR_', 'new_value': '9'},
-        {'key_name': 'company', 'old_value_contains': 'YOUR_', 'new_value': 'Lohika Kyiv'},
-        {'key_name': 'project', 'old_value_contains': 'YOUR_', 'new_value': 'Training Project'},
-        {'key_name': 'role', 'old_value_contains': 'YOUR_', 'new_value': 'Trainee'},
-        {'key_name': 'room', 'old_value_contains': 'YOUR_', 'new_value': '222'},
-        {'key_name': 'hobby', 'old_value_contains': 'YOUR_', 'new_value': 'couch potato time spending'}
+        {'key_name': 'first_name', 'original_value_substring': 'YOUR', 'new_value': 'Dmitry'},
+        {'key_name': 'last_name', 'original_value_substring': 'YOUR', 'new_value': 'Naumov'},
+        {'key_name': 'year_of_birth', 'original_value_substring': 'YOUR', 'new_value': '1973'},
+        {'key_name': 'month_of_birth', 'original_value_substring': 'YOUR', 'new_value': 'Oct'},
+        {'key_name': 'day_of_birth', 'original_value_substring': 'YOUR', 'new_value': '9'},
+        {'key_name': 'company', 'original_value_substring': 'YOUR', 'new_value': 'Lohika Kyiv'},
+        {'key_name': 'project', 'original_value_substring': 'YOUR', 'new_value': 'Training Project'},
+        {'key_name': 'role', 'original_value_substring': 'YOUR', 'new_value': 'Trainee'},
+        {'key_name': 'room', 'original_value_substring': 'YOUR', 'new_value': '222'},
+        {'key_name': 'hobby', 'original_value_substring': 'YOUR', 'new_value': 'couch potato time spending'}
     )
     converter = Data_File_Processor()
+    print(converter.get_python_structure_from_xml("../tests/samples/xml/test_data.xml"))
     converter.data_file_processing("../tests/samples/xml/test_data.xml", "../tests/samples/json/updated_test_data.json", new_values)
