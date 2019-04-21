@@ -1,9 +1,10 @@
-from src.data_file_processor import Data_File_Processor
+from src.data_file_processor import DataFileProcessor
 import os
+import json
 
-processor = Data_File_Processor()
-xml_path = "samples/xml/test_data.xml"
-json_path = "samples/json/updated_test_data.json"
+processor = DataFileProcessor()
+xml_path = os.path.dirname(os.path.realpath(__file__)) + "/samples/xml/test_data.xml"
+json_path = os.path.dirname(os.path.realpath(__file__))+ "/samples/json/updated_test_data.json"
 key_names = ('first_name', 'last_name', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'company', 'project', 'role',
              'room', 'hobby')
 original_content = {
@@ -110,50 +111,84 @@ old_to_new_values = (
 )
 
 
-def test_xml_is_existing():
-    is_existing = os.path.isfile(xml_path)
-    assert is_existing
-
-
-def test_converted_xml():
-    test_result = False
+def compare_dicts_lists(actual_dicts_list, expected_dicts_list):
+    comparison_result = False
     error_message = ""
-    got_xml_content = processor.get_python_structure_from_xml(xml_path)
-    actual_persons = got_xml_content["persons"]
-    expected_persons = original_content["persons"]
-    if len(actual_persons) == len(expected_persons):
-        for i in range(len(actual_persons)):
-            actual_person = actual_persons[i]
-            expected_person = expected_persons[i]
+    if len(actual_dicts_list) == len(expected_dicts_list):
+        for i in range(len(actual_dicts_list)):
+            actual_person = actual_dicts_list[i]
+            expected_person = expected_dicts_list[i]
             actual_person_len = len(actual_person)
             expected_person_len = len(expected_person)
             if actual_person_len == expected_person_len and error_message == "":
                 for key_name in key_names:
                     if actual_person[key_name] == expected_person[key_name]:
-                        test_result = True
+                        comparison_result = True
                     else:
-                        test_result = False
-                        error_message = "person: " + str(i) + " has incorrect attribute value with key: " + key_name + \
-                                        " => actual value: " + actual_person[key_name] + "; expected value: " + \
-                                        expected_person[key_name]
+                        comparison_result = False
+                        error_message = "dict with index: " + str(i) + " has incorrect attribute value with key: " + \
+                                        key_name + " => actual value: " + actual_person[key_name] + \
+                                        "; expected value: " + expected_person[key_name]
                         break
             else:
-                test_result = False
+                comparison_result = False
                 if error_message == "":
-                    error_message = "person: " + str(i) + " has incorrect number of attributes => actual: " + \
+                    error_message = "dict with index: " + str(i) + " has incorrect number of attributes => actual: " + \
                                     str(actual_person_len) + "; expected: " + str(expected_person_len)
                 break
     else:
-        test_result = False
-        error_message = "incorrect number of persons => actual: " + str(len(actual_persons)) + "; expected: " + \
-                        str(len(expected_persons))
-    assert test_result, error_message
+        comparison_result = False
+        error_message = "incorrect number of dicts => actual: " + str(len(actual_dicts_list)) + "; expected: " + \
+                        str(len(expected_dicts_list))
+    return [comparison_result, error_message]
 
 
-def test_json_is_existing():
-    is_existing = os.path.isfile(json_path)
+def remove_file(file_path):
+    try:
+        os.remove(file_path)
+    except:
+        print("json is already removed")
+
+
+def get_json_file_content(json_file_path):
+    with open(json_file_path, "r") as json_data:
+        return json.load(json_data)
+
+
+# TESTS SECTION
+def test_xml_is_existing():
+    is_existing = os.path.isfile(xml_path)
     assert is_existing
 
 
+def test_loaded_xml_content():
+    got_xml_content = processor.get_python_structure_from_xml(xml_path)
+    test_result = compare_dicts_lists(got_xml_content["persons"], original_content["persons"])
+    assert test_result[0], test_result[1]
+
+
+def test_updated_content():
+    got_xml_content = processor.get_python_structure_from_xml(xml_path)
+    got_updated_content = processor.update_python_structure(got_xml_content, old_to_new_values)
+    test_result = compare_dicts_lists(got_updated_content["persons"], new_content["persons"])
+    assert test_result[0], test_result[1]
+
+
+def test_json_is_existing():
+    processor.data_file_processing(xml_path, json_path, old_to_new_values)
+    is_existing = os.path.isfile(json_path)
+    remove_file(json_path)
+    assert is_existing, "file " + json_path + " was not created"
+
+
+def test_json_content():
+    processor.data_file_processing(xml_path, json_path, old_to_new_values)
+    got_json_content = get_json_file_content(json_path)
+    test_result = compare_dicts_lists(got_json_content["persons"], new_content["persons"])
+    remove_file(json_path)
+    assert test_result[0], test_result[1]
+
+
+# this is not test, this is teardown method
 def test_teardown():
-    os.remove(json_path)
+    remove_file(json_path)

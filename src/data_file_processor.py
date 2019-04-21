@@ -2,7 +2,7 @@ import xml.etree.ElementTree as elementsTree
 import json
 
 
-class Data_File_Processor:
+class DataFileProcessor:
     def __init__(self):
         self.python_structure_upper_level = {"persons": None}
 
@@ -70,7 +70,7 @@ class Data_File_Processor:
 
 
 if __name__ == '__main__':
-    new_values = (
+    old_to_new_values = (
         {'key_name': 'first_name', 'original_value_substring': 'YOUR', 'new_value': 'Dmitry'},
         {'key_name': 'last_name', 'original_value_substring': 'YOUR', 'new_value': 'Naumov'},
         {'key_name': 'year_of_birth', 'original_value_substring': 'YOUR', 'new_value': '1973'},
@@ -82,6 +82,7 @@ if __name__ == '__main__':
         {'key_name': 'room', 'original_value_substring': 'YOUR', 'new_value': '222'},
         {'key_name': 'hobby', 'original_value_substring': 'YOUR', 'new_value': 'couch potato time spending'}
     )
-    converter = Data_File_Processor()
+    converter = DataFileProcessor()
     print(converter.get_python_structure_from_xml("../tests/samples/xml/test_data.xml"))
-    converter.data_file_processing("../tests/samples/xml/test_data.xml", "../tests/samples/json/updated_test_data.json", new_values)
+    converter.data_file_processing("../tests/samples/xml/test_data.xml", "../tests/samples/json/updated_test_data.json",
+                                   old_to_new_values)
