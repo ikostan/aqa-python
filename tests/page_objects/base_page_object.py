@@ -23,9 +23,9 @@ class BasePageObject:
     def is_element_present(self, element):
         return EC.presence_of_element_located(element)
 
-    def wait_until_element_is_present(self, driver, element, timeout=5):
+    def wait_until_element_is_present(self, element, timeout=5):
         try:
-            got_element = WebDriverWait(driver, timeout).until(self.is_element_present(element))
+            got_element = WebDriverWait(self.driver, timeout).until(self.is_element_present(element))
             result = got_element.is_displayed()
         except:
             result = False
