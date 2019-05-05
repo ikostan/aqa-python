@@ -1,6 +1,6 @@
-from selenium.webdriver.common.by import By
 from tests.page_objects.base_page_object import BasePageObject
 from tests.page_objects.header_toolbar_fragment import HeaderToolbarFragment
+from tests.page_objects.flag_container_page_object import FlagContainerPageObject
 
 
 class DashboardPageObject(BasePageObject):
@@ -9,6 +9,7 @@ class DashboardPageObject(BasePageObject):
     def __init__(self, driver):
         super().__init__(driver)
         self.header_toolbar = HeaderToolbarFragment(driver)
+        self.flag = FlagContainerPageObject(driver)
 
     def get_url(self):
         return self.get_base_url() + self.PAGE_URL_PART
