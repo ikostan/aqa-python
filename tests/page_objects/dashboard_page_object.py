@@ -14,7 +14,7 @@ class DashboardPageObject(BasePageObject):
         return self.get_base_url() + self.PAGE_URL_PART
 
     def wait_until_page_is_opened(self):
-        return self.header_toolbar.wait_until_user_avatar_is_present()
+        return self.header_toolbar.wait_until_user_button_is_present()
 
     def open_page(self):
         page_url = self.get_url()

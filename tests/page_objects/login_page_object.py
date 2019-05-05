@@ -30,7 +30,7 @@ class LoginPageObject(BasePageObject):
         self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password_for_input)
 
     def click_login_button(self):
-        self.driver.find_element(*self.LOGIN_BUTTON).click() #.submit()
+        self.driver.find_element(*self.LOGIN_BUTTON).click()
 
     def populate_inputs_and_submit(self, login_for_input, password_for_input):
         self.input_login(login_for_input)
@@ -40,7 +40,7 @@ class LoginPageObject(BasePageObject):
     def login_user(self, login_for_input, password_for_input):
         self.open_page()
         self.populate_inputs_and_submit(login_for_input, password_for_input)
-        return self.header_toolbar.wait_until_user_avatar_is_present()
+        return self.header_toolbar.wait_until_user_button_is_present()
 
     def enter_site_as_test_user(self):
         login_for_input = self.get_user_login()
