@@ -9,10 +9,16 @@ class BasePageObject:
     BASE_URL = "https://jira.hillel.it"
     USER_LOGIN = credentials.user_login
     USER_PASSWORD = credentials.user_password
+    PROJECT_KEY = credentials.project_key
+    PROJECT_NAME_FULL = credentials.project_name_full
+    PROJECT_NAME_SHORT = credentials.project_name_short
 
     def __init__(self, driver):
         self.driver = driver
         self.driver.implicitly_wait(self.DEF_TIMEOUT)
+
+    def get_base_url(self):
+        return self.BASE_URL
 
     def get_user_login(self):
         return self.USER_LOGIN
@@ -20,8 +26,17 @@ class BasePageObject:
     def get_user_password(self):
         return self.USER_PASSWORD
 
-    def get_base_url(self):
-        return self.BASE_URL
+    def get_project_key(self):
+        return self.PROJECT_KEY
+
+    def get_project_name_full(self):
+        return self.PROJECT_NAME_FULL
+
+    def get_project_name_short(self):
+        return self.PROJECT_NAME_SHORT
+
+    def get_current_url(self):
+        return self.driver.current_url
 
     # element states
     def is_element_present(self, element):
@@ -29,6 +44,16 @@ class BasePageObject:
 
     def is_element_clickable(self, element):
         return EC.element_to_be_clickable(element)
+
+    def is_string_contains_substring(self, string, sub_string):
+        if sub_string in string:
+            return True
+        else:
+            return False
+
+    # element attributes
+    def get_element_attribute(self, locator, attribute):
+        return self.driver.find_element(*locator).get_attribute(attribute)
 
     # element waits
     def wait_until_element_is_present(self, element, timeout=5):
@@ -78,6 +103,9 @@ class BasePageObject:
             method_result = result
         self.driver.implicitly_wait(self.DEF_TIMEOUT)
         return method_result
+
+    def wait_until_attribute_value_is(self, locator, attribute, value, timeout=2):
+        WebDriverWait(self.driver, timeout).until(self.get_element_attribute(locator, attribute) == value)
 
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value):
