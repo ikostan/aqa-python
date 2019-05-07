@@ -1,6 +1,7 @@
 import pytest
 from tests.page_objects.dashboard_page_object import DashboardPageObject
 from tests.page_objects.create_issue_modal_page_object import CreateIssueModal
+from tests.page_objects.browse_issue_page_object import BrowseIssuePageObject
 
 
 class TestCreateIssue:
@@ -12,7 +13,13 @@ class TestCreateIssue:
         self.dashboard_page.open_page()
 
     @pytest.mark.parametrize("project, issue_type, summary, description, priority", [
-        ("Webinar (WEBINAR)", "Bug", "Test summary (QA)", "*Test description (should be removed)*",
+        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 1", "*Test description (should be removed)*",
+         "Medium"),
+        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 2", "*Test description (should be removed)*",
+         "Medium"),
+        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 3", "*Test description (should be removed)*",
+         "Medium"),
+        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 4", "*Test description (should be removed)*",
          "Medium")
     ])
     def test_create_issue(self, project, issue_type, summary, description, priority):
@@ -26,4 +33,8 @@ class TestCreateIssue:
         assert summary == self.dashboard_page.flag.get_new_issue_data()["summary"]
 
     def teardown_method(self):
+        for issue in self.created_issues:
+            browse_issue_page = BrowseIssuePageObject(self.driver, issue)
+            browse_issue_page.open_page_by_url()
+            browse_issue_page.issue_details.delete_issue()
         self.driver.close()

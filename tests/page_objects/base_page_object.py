@@ -47,8 +47,10 @@ class BasePageObject:
 
     def is_string_contains_substring(self, string, sub_string):
         if sub_string in string:
+            print("\n\n\n TRUE \n\n\n")
             return True
         else:
+            print("\n\n\n FALSE \n\n\n")
             return False
 
     # element attributes
@@ -106,6 +108,15 @@ class BasePageObject:
 
     def wait_until_attribute_value_is(self, locator, attribute, value, timeout=2):
         WebDriverWait(self.driver, timeout).until(self.get_element_attribute(locator, attribute) == value)
+
+    def wait_until_element_is_visible(self, locator, timeout=2):
+        WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
+
+    def wait_until_element_is_not_visible(self, locator, timeout=2):
+        WebDriverWait(self.driver, timeout).until(EC.invisibility_of_element_located(locator))
+
+    def wait_until_url_contains(self, url_sub_string, timeout=2):
+        WebDriverWait(self.driver, timeout).until(EC.url_contains(url_sub_string))
 
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value):
