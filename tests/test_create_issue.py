@@ -5,12 +5,18 @@ from tests.page_objects.browse_issue_page_object import BrowseIssuePageObject
 
 
 class TestCreateIssue:
-    @pytest.fixture(autouse=True)
-    def setup_method(self, login_and_get_driver):
-        self.driver = login_and_get_driver
-        self.dashboard_page = DashboardPageObject(self.driver)
-        self.created_issues = []
-        self.dashboard_page.open_page()
+    created_issues = []
+
+    @pytest.fixture(scope="module", autouse=True)
+    def before_after(self, login_and_get_driver):
+        driver = login_and_get_driver
+        dashboard_page = DashboardPageObject(driver)
+        yield {"driver": driver, "dashboard": dashboard_page}
+        for issue in self.created_issues:
+            driver.fullscreen_window()
+            browse_issue_page = BrowseIssuePageObject(driver, issue)
+            browse_issue_page.open_page_by_url()
+            browse_issue_page.issue_details.delete_issue()
 
     @pytest.mark.parametrize("project, issue_type, summary, description, priority", [
         ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 1", "*Test description (should be removed)*",
@@ -22,19 +28,15 @@ class TestCreateIssue:
         ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 4", "*Test description (should be removed)*",
          "Medium")
     ])
-    def test_create_issue(self, project, issue_type, summary, description, priority):
-        self.dashboard_page.header_toolbar.click_create_button()
+    def test_create_issue(self, before_after, project, issue_type, summary, description, priority):
+        self.driver = before_after["driver"]
+        self.dashboard = before_after["dashboard"]
+        self.dashboard.open_page()
+        self.dashboard.header_toolbar.click_create_button()
         self.create_issue_modal = CreateIssueModal(self.driver)
         self.create_issue_modal.wait_until_modal_is_opened(5)
         self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
         self.create_issue_modal.wait_until_modal_is_not_opened()
-        self.dashboard_page.flag.wait_until_flag_is_shown()
-        self.created_issues.append(self.dashboard_page.flag.get_new_issue_data()["link"])
-        assert summary == self.dashboard_page.flag.get_new_issue_data()["summary"]
-
-    def teardown_method(self):
-        for issue in self.created_issues:
-            browse_issue_page = BrowseIssuePageObject(self.driver, issue)
-            browse_issue_page.open_page_by_url()
-            browse_issue_page.issue_details.delete_issue()
-        self.driver.close()
+        self.dashboard.flag.wait_until_flag_is_shown()
+        self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
+        assert summary == self.dashboard.flag.get_new_issue_data()["summary"]

@@ -13,7 +13,6 @@ class BrowseIssuePageObject(BasePageObject):
         self.page_url_part = self.get_base_url() + self.PAGE_URL_PART
         self.page_url_part_with_project = self.page_url_part + self.get_project_key()
         self.page_url_full = url_optional
-        print("\n\n\n", url_optional, "\n\n\n")
 
     def set_url_full_directly(self, url):
         self.page_url_full = url
