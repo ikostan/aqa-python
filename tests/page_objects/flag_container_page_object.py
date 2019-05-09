@@ -11,7 +11,7 @@ class FlagContainerPageObject(BasePageObject):
         super().__init__(driver)
 
     def wait_until_flag_is_shown(self, timeout=3):
-        return self.wait_until_element_is_present(self.FLAG_CONTAINER, timeout)
+        return self.wait_until_element_is_present(self.FLAG_CONTAINER, True, timeout)
 
     def get_flag_element(self):
         return self.driver.find_element(*self.FLAG_CONTAINER)
@@ -23,5 +23,5 @@ class FlagContainerPageObject(BasePageObject):
         issue_keys_element = self.get_flag_element().find_element(*self.ISSUE_CREATED_KEYS)
         key = issue_keys_element.get_attribute("data-issue-key")
         link = issue_keys_element.get_attribute("href")
-        summary = self.slice_off_substring(issue_keys_element.text, key + " - ")
+        summary = issue_keys_element.text.split(" - ")[1]
         return {"key": key, "link": link, "summary": summary}

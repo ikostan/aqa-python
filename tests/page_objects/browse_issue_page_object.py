@@ -30,8 +30,8 @@ class BrowseIssuePageObject(BasePageObject):
         return self.page_url_part_with_project
 
     def wait_until_page_is_opened(self, timeout=2):
-        self.wait_until_url_contains(self.page_url_part_with_project, timeout)
-        self.wait_until_element_is_present(self.issue_details.wait_until_panel_is_opened())
+        self.wait_until_url_contains(self.page_url_part_with_project, True, timeout)
+        self.issue_details.wait_until_panel_is_opened(timeout)
 
     def open_page_by_url(self, url=None):
         if url is not None:

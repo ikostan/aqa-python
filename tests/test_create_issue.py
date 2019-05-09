@@ -8,7 +8,7 @@ class TestCreateIssue:
     created_issues = []
 
     @pytest.fixture(scope="module", autouse=True)
-    def before_after(self, login_and_get_driver):
+    def before_all_and_after_all(self, login_and_get_driver):
         driver = login_and_get_driver
         dashboard_page = DashboardPageObject(driver)
         yield {"driver": driver, "dashboard": dashboard_page}
@@ -18,25 +18,53 @@ class TestCreateIssue:
             browse_issue_page.open_page_by_url()
             browse_issue_page.issue_details.delete_issue()
 
-    @pytest.mark.parametrize("project, issue_type, summary, description, priority", [
-        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 1", "*Test description (should be removed)*",
-         "Medium"),
-        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 2", "*Test description (should be removed)*",
-         "Medium"),
-        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 3", "*Test description (should be removed)*",
-         "Medium"),
-        ("Webinar (WEBINAR)", "Bug", "Test summary (QA) 4", "*Test description (should be removed)*",
-         "Medium")
-    ])
-    def test_create_issue(self, before_after, project, issue_type, summary, description, priority):
+    def before_each(self, before_after, project, issue_type, summary, description, priority):
         self.driver = before_after["driver"]
         self.dashboard = before_after["dashboard"]
+        self.create_issue_modal = CreateIssueModal(self.driver)
         self.dashboard.open_page()
         self.dashboard.header_toolbar.click_create_button()
-        self.create_issue_modal = CreateIssueModal(self.driver)
         self.create_issue_modal.wait_until_modal_is_opened(5)
         self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
-        self.create_issue_modal.wait_until_modal_is_not_opened()
+
+    @pytest.mark.parametrize(
+        "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
+            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) Without Description", None, "Medium", None, True),
+            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) With Description", "*Test description*",
+             "Medium", None, True),
+            ("Webinar (WEBINAR)", "Bug",
+             "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345",
+             None, "Medium", None, True),
+        ])
+    def test_create_issue_positive(self, before_all_and_after_all, project, issue_type, summary, description, priority,
+                                   error_message_expect, is_modal_closed_expect):
+        self.before_each(before_all_and_after_all, project, issue_type, summary, description, priority)
         self.dashboard.flag.wait_until_flag_is_shown()
         self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
-        assert summary == self.dashboard.flag.get_new_issue_data()["summary"]
+        flag_summary_actual = self.dashboard.flag.get_new_issue_data()["summary"]
+        is_modal_closed_actual = self.create_issue_modal.wait_until_modal_is_not_opened(2)
+        error_message_actual = self.create_issue_modal.get_issue_summary_error_message()
+        assert flag_summary_actual == summary
+        assert is_modal_closed_actual == is_modal_closed_expect
+        assert error_message_actual == error_message_expect
+
+    @pytest.mark.parametrize(
+        "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
+            ("Webinar (WEBINAR)", "Bug", None, None, "Medium", "You must specify a summary of the issue.", False),
+            ("Webinar (WEBINAR)", "Bug",
+             "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456",
+             None, "Medium", "Summary must be less than 255 characters.", False),
+        ])
+    def test_create_issue_negative(self, before_all_and_after_all, project, issue_type, summary, description, priority,
+                                   error_message_expect, is_modal_closed_expect):
+        self.before_each(before_all_and_after_all, project, issue_type, summary, description, priority)
+        is_modal_closed_actual = self.create_issue_modal.wait_until_modal_is_not_opened(1)
+        error_message_actual = self.create_issue_modal.get_issue_summary_error_message()
+        # <crutch>  I can't close or refresh the page while Create Issue modal is shown because browser dialogs appear
+        #           and I can't interact them. Also I can't click "OK" in browser dialog when I click modal's "Cancel"
+        self.create_issue_modal.populate_summary("Temp issue")
+        self.create_issue_modal.click_create_button()
+        self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
+        # </crutch>
+        assert error_message_actual == error_message_expect
+        assert is_modal_closed_actual == is_modal_closed_expect

@@ -21,14 +21,14 @@ class IssueDetailsFragment(BasePageObject):
     def get_issue_key_id(self):
         return self.driver.find_element(*self.ISSUE_KEY_ID_ELEMENT).text
 
-    def wait_until_panel_is_opened(self):
-        return self.wait_until_element_is_present(self.PROJECT_NAME_ELEMENT)
+    def wait_until_panel_is_opened(self, timeout=2):
+        return self.wait_until_element_is_present(self.PROJECT_NAME_ELEMENT, True, timeout)
 
     def wait_for_dropdown(self, dropdown_locator, true_false_to_open_close=True):
         if true_false_to_open_close:
-            self.wait_until_element_is_visible(dropdown_locator)
+            self.wait_until_element_is_visible(dropdown_locator, True)
         else:
-            self.wait_until_element_is_not_visible(dropdown_locator)
+            self.wait_until_element_is_visible(dropdown_locator, False)
 
     def click_more_button(self):
         self.driver.find_element(*self.MORE_BUTTON).click()
@@ -41,6 +41,6 @@ class IssueDetailsFragment(BasePageObject):
         self.wait_for_dropdown(self.MORE_DROP, True)
         self.click_more_drop_delete_issue_item()
         self.wait_for_dropdown(self.MORE_DROP, False)
-        self.wait_until_element_is_present(self.DELETE_ISSUE_DIALOG, 2)
+        self.wait_until_element_is_present(self.DELETE_ISSUE_DIALOG, True, 2)
         self.driver.find_element(*self.DELETE_ISSUE_DIALOG_SUBMIT).click()
         self.flag.wait_until_flag_is_shown()

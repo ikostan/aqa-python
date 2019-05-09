@@ -39,18 +39,22 @@ class BasePageObject:
         return self.driver.current_url
 
     # element states
-    def is_element_present(self, element):
-        return EC.presence_of_element_located(element)
-
-    def is_element_clickable(self, element):
-        return EC.element_to_be_clickable(element)
+    def is_element_displayed(self, element, timeout=0):
+        self.driver.implicitly_wait(timeout)
+        try:
+            self.driver.find_element(*element)
+            result = True
+        except:
+            result = False
+        finally:
+            method_result = result
+        self.driver.implicitly_wait(self.DEF_TIMEOUT)
+        return method_result
 
     def is_string_contains_substring(self, string, sub_string):
         if sub_string in string:
-            print("\n\n\n TRUE \n\n\n")
             return True
         else:
-            print("\n\n\n FALSE \n\n\n")
             return False
 
     # element attributes
@@ -58,11 +62,16 @@ class BasePageObject:
         return self.driver.find_element(*locator).get_attribute(attribute)
 
     # element waits
-    def wait_until_element_is_present(self, element, timeout=5):
+    def do_wait(self, expected_condition, true_or_false_for_until_or_not, timeout=5):
         self.driver.implicitly_wait(0)
         try:
-            got_element = WebDriverWait(self.driver, timeout).until(self.is_element_present(element))
-            result = got_element.is_displayed()
+            result = None
+            if true_or_false_for_until_or_not:
+                WebDriverWait(self.driver, timeout).until(expected_condition)
+                result = True
+            elif not true_or_false_for_until_or_not:
+                WebDriverWait(self.driver, timeout).until_not(expected_condition)
+                result = True
         except:
             result = False
         finally:
@@ -70,53 +79,17 @@ class BasePageObject:
         self.driver.implicitly_wait(self.DEF_TIMEOUT)
         return method_result
 
-    def wait_until_element_is_not_present(self, element, timeout=5):
-        self.driver.implicitly_wait(0)
-        try:
-            got_element = WebDriverWait(self.driver, timeout).until_not(self.is_element_present(element))
-            result = got_element.is_displayed()
-        except:
-            result = False
-        finally:
-            method_result = result
-        self.driver.implicitly_wait(self.DEF_TIMEOUT)
-        return method_result
+    def wait_until_element_is_present(self, element, true_or_false_for_present_or_not, timeout=5):
+        return self.do_wait(EC.presence_of_element_located(element), true_or_false_for_present_or_not, timeout)
 
-    def wait_until_element_is_clickable(self, element, timeout=5):
-        self.driver.implicitly_wait(0)
-        try:
-            got_element = WebDriverWait(self.driver, timeout).until(self.is_element_clickable(element))
-            result = got_element.is_displayed()
-        except:
-            result = False
-        finally:
-            method_result = result
-        self.driver.implicitly_wait(self.DEF_TIMEOUT)
-        return method_result
+    def wait_until_element_is_clickable(self, element, true_or_false_for_clickable_or_not, timeout=5):
+        return self.do_wait(EC.element_to_be_clickable(element), true_or_false_for_clickable_or_not, timeout)
 
-    def wait_until_element_is_not_clickable(self, element, timeout=5):
-        self.driver.implicitly_wait(0)
-        try:
-            got_element = WebDriverWait(self.driver, timeout).until_not(self.is_element_clickable(element))
-            result = got_element.is_displayed()
-        except:
-            result = False
-        finally:
-            method_result = result
-        self.driver.implicitly_wait(self.DEF_TIMEOUT)
-        return method_result
+    def wait_until_element_is_visible(self, locator, true_or_false_for_visible_or_not, timeout=2):
+        return self.do_wait(EC.visibility_of_element_located(locator), true_or_false_for_visible_or_not, timeout)
 
-    def wait_until_attribute_value_is(self, locator, attribute, value, timeout=2):
-        WebDriverWait(self.driver, timeout).until(self.get_element_attribute(locator, attribute) == value)
-
-    def wait_until_element_is_visible(self, locator, timeout=2):
-        WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
-
-    def wait_until_element_is_not_visible(self, locator, timeout=2):
-        WebDriverWait(self.driver, timeout).until(EC.invisibility_of_element_located(locator))
-
-    def wait_until_url_contains(self, url_sub_string, timeout=2):
-        WebDriverWait(self.driver, timeout).until(EC.url_contains(url_sub_string))
+    def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=2):
+        return self.do_wait(EC.url_contains(url_sub_string), true_or_false_for_contains_or_not, timeout)
 
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value):
@@ -126,9 +99,3 @@ class BasePageObject:
         combobox_element_input.clear()
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
-
-    # other methods
-    def slice_off_substring(self, string, sliced_substring):
-        full_string_len = len(string)
-        sliced_substring_len = len(sliced_substring)
-        return string[sliced_substring_len:full_string_len]
