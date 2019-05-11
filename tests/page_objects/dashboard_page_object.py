@@ -1,5 +1,5 @@
 from tests.page_objects.base_page_object import BasePageObject
-from tests.page_objects.header_toolbar_fragment import HeaderToolbarFragment
+from tests.page_objects.fragments.header_toolbar_fragment import HeaderToolbarFragment
 from tests.page_objects.flag_container_page_object import FlagContainerPageObject
 
 

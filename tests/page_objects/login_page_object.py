@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 from tests.page_objects.base_page_object import BasePageObject
-from tests.page_objects.header_toolbar_fragment import HeaderToolbarFragment
+from tests.page_objects.fragments.header_toolbar_fragment import HeaderToolbarFragment
 
 
 class LoginPageObject(BasePageObject):
