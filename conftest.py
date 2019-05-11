@@ -10,4 +10,8 @@ def login_and_get_driver():
     login_page = LoginPageObject(driver)
     login_page.enter_site_as_test_user()
     yield driver
-    driver.close()
+    try:
+        driver.close()
+        # driver.quit()
+    except:
+        pass

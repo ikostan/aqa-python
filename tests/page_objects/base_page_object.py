@@ -91,6 +91,9 @@ class BasePageObject:
     def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=2):
         return self.do_wait(EC.url_contains(url_sub_string), true_or_false_for_contains_or_not, timeout)
 
+    def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=2):
+        return self.do_wait(EC.alert_is_present(), true_or_false_for_present_or_not, timeout)
+
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value):
         combobox_element = self.driver.find_element(*combobox_locator)
@@ -99,3 +102,8 @@ class BasePageObject:
         combobox_element_input.clear()
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
+
+    def alert_wait_and_confirm(self, timeout=2):
+        if self.wait_until_alert_is_present(True, timeout):
+            self.driver.switch_to.alert.accept()
+        self.wait_until_alert_is_present(False, timeout)

@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from tests.page_objects.base_page_object import BasePageObject
 
 
-class CreateIssueModal(BasePageObject):
+class CreateIssueModalNoFixtures(BasePageObject):
     MODAL = (By.ID, "create-issue-dialog")
     SPINNER = (By.CSS_SELECTOR, ".throbber.loading aui-spinner")
     PROJECT_COMBOBOX = (By.ID, "project-single-select")
@@ -13,6 +13,7 @@ class CreateIssueModal(BasePageObject):
     ISSUE_DESCRIPTION_BODY = (By.CSS_SELECTOR, " .mce-content-body")
     PRIORITY_COMBOBOX = (By.ID, "priority-single-select")
     CREATE_BUTTON = (By.ID, "create-issue-submit")
+    CANCEL_BUTTON = (By.CSS_SELECTOR, " .jira-dialog a.cancel")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -30,21 +31,24 @@ class CreateIssueModal(BasePageObject):
     def wait_until_create_button_is_clickable(self, timeout=2):
         return self.wait_until_element_is_clickable(self.CREATE_BUTTON, True, timeout)
 
+    def wait_until_summary_error_is_existing(self, timeout=2):
+        return self.wait_until_element_is_clickable(self.ISSUE_SUMMARY_ERROR, True, timeout)
+
     def wait_until_data_is_stored(self):
         self.wait_until_spinner_is_disappeared()
         self.wait_until_create_button_is_clickable()
 
     # states
-    def is_error_existing(self):
-        return self.is_element_displayed(self.ISSUE_SUMMARY_ERROR)
+    def is_error_existing(self, timeout=2):
+        return self.wait_until_summary_error_is_existing(timeout)
 
     def is_modal_existing(self):
         return self.is_element_displayed(self.MODAL)
 
     # gets
-    def get_issue_summary_error_message(self):
+    def get_issue_summary_error_message(self, timeout=2):
         message = None
-        if self.is_error_existing():
+        if self.is_error_existing(timeout):
             message = self.driver.find_element(*self.ISSUE_SUMMARY_ERROR).text
         return message
 
@@ -87,6 +91,10 @@ class CreateIssueModal(BasePageObject):
         self.wait_until_data_is_stored()
         self.driver.find_element(*self.CREATE_BUTTON).click()
 
+    def click_cancel_button(self):
+        self.wait_until_data_is_stored()
+        self.driver.find_element(*self.CANCEL_BUTTON).click()
+
     # complex actions
     def populate_fields_and_click_create(self, project, issue_type, summary, description, priority):
         self.select_project(project)
@@ -95,3 +103,8 @@ class CreateIssueModal(BasePageObject):
         self.populate_description(description)
         self.select_priority(priority)
         self.click_create_button()
+
+    def cancel_creation(self):
+        self.click_cancel_button()
+        self.alert_wait_and_confirm()
+        self.wait_until_modal_is_not_opened()
