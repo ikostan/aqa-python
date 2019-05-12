@@ -29,6 +29,7 @@ class TestSearchIssue:
         self.dashboard.flag.wait_until_flag_is_shown()
         self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
         self.create_issue_modal.wait_until_modal_is_not_opened(2)
+        self.browse_issue_page = BrowseIssuePageObject(self.driver, self.created_issues[0])
 
     def teardown_class(self):
         for issue in self.created_issues:
@@ -43,9 +44,8 @@ class TestSearchIssue:
             pass
 
     def setup_method(self):
-        url_to_issue = self.created_issues[0]
-        print("/=/=/=/=/=/=/=/", url_to_issue)
-        self.browse_issue_page = BrowseIssuePageObject(self.driver, url_to_issue)
+        # url_to_issue = self.created_issues[0]
+        # print("/=/=/=/=/=/=/=/", url_to_issue)
         self.browse_issue_page.open_page_by_url()
 
     def test_update_issue_summary_255(self):

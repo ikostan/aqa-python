@@ -72,9 +72,11 @@ class IssueDetailsFragment(BasePageObject):
 
     def click_priority_element(self):
         self.driver.find_element(*self.ISSUE_PRIORITY).click()
+        self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, 2)
 
     def click_assignee_element(self):
         self.driver.find_element(*self.ISSUE_ASSIGNEE).click()
+        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_FORM, 2)
 
     def update_summary(self, summary_name=None, true_if_allow_empty_input=False):
         if summary_name is not None:
