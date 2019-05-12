@@ -7,6 +7,7 @@ class IssueDetailsFragment(BasePageObject):
     PROJECT_AVATAR_ELEMENT = (By.ID, "project-avatar")
     PROJECT_NAME_ELEMENT = (By.ID, "project-name-val")
     ISSUE_KEY_ID_ELEMENT = (By.ID, "key-val")
+    ISSUE_SUMMARY = (By.ID, "summary-val")
     MORE_BUTTON = (By.ID, "opsbar-operations_more")
     MORE_DROP = (By.ID, "opsbar-operations_more_drop")
     MORE_DROP_DELETE_ISSUE_ITEM = (By.ID, "delete-issue")
@@ -20,6 +21,9 @@ class IssueDetailsFragment(BasePageObject):
 
     def get_issue_key_id(self):
         return self.driver.find_element(*self.ISSUE_KEY_ID_ELEMENT).text
+
+    def get_issue_summary(self):
+        return self.driver.find_element(*self.ISSUE_SUMMARY).text
 
     def wait_until_panel_is_opened(self, timeout=2):
         return self.wait_until_element_is_present(self.PROJECT_NAME_ELEMENT, True, timeout)
