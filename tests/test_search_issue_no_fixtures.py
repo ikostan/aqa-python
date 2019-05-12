@@ -25,8 +25,9 @@ class TestSearchIssue:
         self.dashboard.header_toolbar.click_create_button()
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
         self.create_issue_modal.wait_until_modal_is_opened(5)
-        self.create_issue_modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, self.ISSUE_SUMMARY,
-                                                                 self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
+        self.create_issue_modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE,
+                                                                 self.ISSUE_SUMMARY, self.ISSUE_DESCRIPTION,
+                                                                 self.ISSUE_PRIORITY)
         self.dashboard.flag.wait_until_flag_is_shown()
         self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
         self.create_issue_modal.wait_until_modal_is_not_opened(2)
