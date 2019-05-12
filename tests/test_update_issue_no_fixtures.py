@@ -48,12 +48,6 @@ class TestSearchIssue:
         # print("/=/=/=/=/=/=/=/", url_to_issue)
         self.browse_issue_page.open_page_by_url()
 
-    def test_update_issue_summary_255(self):
-        issue_summary_new = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345"
-        self.browse_issue_page.issue_details.update_summary(issue_summary_new)
-        self.driver.refresh()
-        assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_new
-
     def test_update_issue_summary(self):
         issue_summary_new = "Issue That Has Been Updated #WDN1"
         self.browse_issue_page.issue_details.update_summary(issue_summary_new)

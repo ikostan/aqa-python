@@ -58,9 +58,11 @@ class IssueDetailsFragment(BasePageObject):
             self.wait_until_element_is_visible(dropdown_locator, False)
 
     def click_more_button(self):
+        self.wait_until_element_is_present(*self.MORE_BUTTON, 2)
         self.driver.find_element(*self.MORE_BUTTON).click()
 
     def click_more_drop_delete_issue_item(self):
+        self.wait_until_element_is_present(*self.MORE_DROP_DELETE_ISSUE_ITEM, 2)
         self.driver.find_element(*self.MORE_DROP_DELETE_ISSUE_ITEM).click()
 
     def click_summary_element(self):
@@ -68,6 +70,7 @@ class IssueDetailsFragment(BasePageObject):
         self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, 2)
 
     def click_summary_cancel(self):
+        self.wait_until_element_is_present(*self.ISSUE_SUMMARY_CANCEL, 2)
         self.driver.find_element(*self.ISSUE_SUMMARY_CANCEL).click()
 
     def click_priority_element(self):
