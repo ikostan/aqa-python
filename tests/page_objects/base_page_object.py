@@ -95,13 +95,19 @@ class BasePageObject:
         return self.do_wait(EC.alert_is_present(), true_or_false_for_present_or_not, timeout)
 
     # element actions
-    def pick_in_combobox(self, combobox_locator, item_value):
+    def pick_in_combobox(self, combobox_locator, item_value, true_to_hit_enter_after_tab=False):
         combobox_element = self.driver.find_element(*combobox_locator)
-        combobox_element_input = combobox_element.find_element_by_css_selector("input")
         combobox_element.click()
-        combobox_element_input.clear()
+        combobox_element_input = combobox_element.find_element_by_css_selector("input")
+        # it is crutch, I know
+        for i in range(15):
+            combobox_element_input.send_keys(Keys.DELETE)
+        for i in range(15):
+            combobox_element_input.send_keys(Keys.BACKSPACE)
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
+        if true_to_hit_enter_after_tab:
+            combobox_element_input.send_keys(Keys.ENTER)
 
     def alert_wait_and_confirm(self, timeout=2):
         if self.wait_until_alert_is_present(True, timeout):
