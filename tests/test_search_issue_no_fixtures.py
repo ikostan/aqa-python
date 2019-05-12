@@ -12,7 +12,7 @@ class TestSearchIssue:
     created_issues = []
     ISSUE_PROJECT = "Webinar (WEBINAR)"
     ISSUE_TYPE = "Bug"
-    ISSUE_SUMMARY = "Checking The Searching Feature With THe Selenium Python"
+    ISSUE_SUMMARY = "Checking The Searching Feature With The Selenium Python"
     ISSUE_DESCRIPTION = "Description of the <Checking Searching Feature With Selenium Python AQA>"
     ISSUE_PRIORITY = "Medium"
 
