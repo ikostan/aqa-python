@@ -65,6 +65,7 @@ class IssueDetailsFragment(BasePageObject):
 
     def click_summary_element(self):
         self.driver.find_element(*self.ISSUE_SUMMARY).click()
+        self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, 2)
 
     def click_summary_cancel(self):
         self.driver.find_element(*self.ISSUE_SUMMARY_CANCEL).click()
