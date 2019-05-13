@@ -25,6 +25,7 @@ class IssueDetailsFragment(BasePageObject):
     DELETE_ISSUE_DIALOG = (By.ID, "delete-issue-dialog")
     DELETE_ISSUE_DIALOG_SUBMIT = (By.ID, "delete-issue-submit")
     DELETE_ISSUE_DIALOG_CANCEL = (By.ID, "delete-issue-cancel")
+    LAST_APPEARED_ELEMENT = (By.ID, " .issue-drop-zone__text")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -48,8 +49,8 @@ class IssueDetailsFragment(BasePageObject):
     def get_issue_assignee(self):
         return self.driver.find_element(*self.ISSUE_ASSIGNEE).text
 
-    def wait_until_panel_is_opened(self, timeout=2):
-        return self.wait_until_element_is_present(self.PROJECT_NAME_ELEMENT, True, timeout)
+    def wait_until_panel_is_opened(self, timeout=4):
+        return self.wait_until_element_is_present(self.LAST_APPEARED_ELEMENT, True, timeout)
 
     def wait_for_dropdown(self, dropdown_locator, true_false_to_open_close=True):
         if true_false_to_open_close:
