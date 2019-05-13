@@ -25,30 +25,27 @@ class CreateIssueModalNoFixtures(BasePageObject):
     def wait_until_modal_is_not_opened(self, timeout=3):
         return self.wait_until_element_is_present(self.MODAL, False, timeout)
 
-    def wait_until_spinner_is_disappeared(self, timeout=2):
-        return self.wait_until_element_is_present(self.SPINNER, True, timeout)
+    def wait_until_spinner_is_disappeared(self, timeout=5):
+        return self.wait_until_element_is_present(self.SPINNER, False, timeout)
 
     def wait_until_create_button_is_clickable(self, timeout=2):
         return self.wait_until_element_is_clickable(self.CREATE_BUTTON, True, timeout)
 
     def wait_until_summary_error_is_existing(self, timeout=2):
-        return self.wait_until_element_is_clickable(self.ISSUE_SUMMARY_ERROR, True, timeout)
+        return self.wait_until_element_is_present(self.ISSUE_SUMMARY_ERROR, True, timeout)
 
     def wait_until_data_is_stored(self):
         self.wait_until_spinner_is_disappeared()
         self.wait_until_create_button_is_clickable()
 
     # states
-    def is_error_existing(self, timeout=2):
-        return self.wait_until_summary_error_is_existing(timeout)
-
     def is_modal_existing(self):
         return self.is_element_displayed(self.MODAL)
 
     # gets
     def get_issue_summary_error_message(self, timeout=2):
         message = None
-        if self.is_error_existing(timeout):
+        if self.wait_until_summary_error_is_existing(timeout):
             message = self.driver.find_element(*self.ISSUE_SUMMARY_ERROR).text
         return message
 

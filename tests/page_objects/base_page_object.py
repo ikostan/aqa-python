@@ -96,6 +96,7 @@ class BasePageObject:
 
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value, true_to_hit_enter_after_tab=False):
+        self.wait_until_element_is_present(combobox_locator, True, 3)
         combobox_element = self.driver.find_element(*combobox_locator)
         combobox_element.click()
         combobox_element_input = combobox_element.find_element_by_css_selector("input")

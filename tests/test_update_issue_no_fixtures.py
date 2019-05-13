@@ -44,8 +44,6 @@ class TestSearchIssue:
             pass
 
     def setup_method(self):
-        # url_to_issue = self.created_issues[0]
-        # print("/=/=/=/=/=/=/=/", url_to_issue)
         self.browse_issue_page.open_page_by_url()
 
     def test_update_issue_summary(self):

@@ -61,7 +61,7 @@ class TestSearchIssue:
         assert self.search_page.is_result_item_existing_by_name(self.ISSUE_SUMMARY) is True
         assert self.search_page.issue.get_issue_summary() == self.ISSUE_SUMMARY
 
-    def test_create_issue_positive(self):
+    def test_search_issue_not_found(self):
         self.dashboard.header_toolbar.populate_search_and_submit("incorrect_search_request_should_not_be_found")
         self.search_page = SearchPageObject(self.driver)
         self.search_page.wait_until_page_is_opened()

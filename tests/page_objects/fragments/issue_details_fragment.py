@@ -58,28 +58,28 @@ class IssueDetailsFragment(BasePageObject):
             self.wait_until_element_is_visible(dropdown_locator, False)
 
     def click_more_button(self):
-        self.wait_until_element_is_present(*self.MORE_BUTTON, 2)
+        self.wait_until_element_is_present(self.MORE_BUTTON, True, 2)
         self.driver.find_element(*self.MORE_BUTTON).click()
 
     def click_more_drop_delete_issue_item(self):
-        self.wait_until_element_is_present(*self.MORE_DROP_DELETE_ISSUE_ITEM, 2)
+        self.wait_until_element_is_present(self.MORE_DROP_DELETE_ISSUE_ITEM, True, 2)
         self.driver.find_element(*self.MORE_DROP_DELETE_ISSUE_ITEM).click()
 
     def click_summary_element(self):
         self.driver.find_element(*self.ISSUE_SUMMARY).click()
-        self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, 2)
+        self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True, 2)
 
     def click_summary_cancel(self):
-        self.wait_until_element_is_present(*self.ISSUE_SUMMARY_CANCEL, 2)
+        self.wait_until_element_is_present(self.ISSUE_SUMMARY_CANCEL, True, 2)
         self.driver.find_element(*self.ISSUE_SUMMARY_CANCEL).click()
 
     def click_priority_element(self):
         self.driver.find_element(*self.ISSUE_PRIORITY).click()
-        self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, 2)
+        self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, True, 2)
 
     def click_assignee_element(self):
         self.driver.find_element(*self.ISSUE_ASSIGNEE).click()
-        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_FORM, 2)
+        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_FORM, True, 2)
 
     def update_summary(self, summary_name=None, true_if_allow_empty_input=False):
         if summary_name is not None:
@@ -89,7 +89,8 @@ class IssueDetailsFragment(BasePageObject):
                 summary_input.clear()
                 summary_input.send_keys(summary_name)
                 summary_input.send_keys(Keys.ENTER)
-                self.wait_until_element_is_present(self.ISSUE_SUMMARY_SPINNER, False)
+                if summary_name != "" and len(summary_name) < 256:
+                    self.wait_until_element_is_present(self.ISSUE_SUMMARY_SPINNER, False)
 
     def select_priority(self, priority_name=None):
         if priority_name is not None and priority_name != "":
