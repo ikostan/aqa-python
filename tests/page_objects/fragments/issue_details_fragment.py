@@ -58,7 +58,7 @@ class IssueDetailsFragment(BasePageObject):
             self.wait_until_element_is_visible(dropdown_locator, False)
 
     def click_more_button(self):
-        self.wait_until_element_is_present(self.MORE_BUTTON, True, 2)
+        print("---MORE---",self.wait_until_element_is_present(self.MORE_BUTTON, True, 4))
         self.driver.find_element(*self.MORE_BUTTON).click()
 
     def click_more_drop_delete_issue_item(self):
@@ -85,6 +85,7 @@ class IssueDetailsFragment(BasePageObject):
         if summary_name is not None:
             if summary_name != "" or true_if_allow_empty_input:
                 self.click_summary_element()
+                print("---+---+---+---", self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True))
                 summary_input = self.driver.find_element(*self.ISSUE_SUMMARY_INPUT)
                 summary_input.clear()
                 summary_input.send_keys(summary_name)
