@@ -67,7 +67,7 @@ class IssueDetailsFragment(BasePageObject):
 
     def click_summary_element(self):
         self.driver.find_element(*self.ISSUE_SUMMARY).click()
-        self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True, 2)
+        print("---+---+---+---", self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True))
 
     def click_summary_cancel(self):
         self.wait_until_element_is_present(self.ISSUE_SUMMARY_CANCEL, True, 2)
@@ -75,7 +75,7 @@ class IssueDetailsFragment(BasePageObject):
 
     def click_priority_element(self):
         self.driver.find_element(*self.ISSUE_PRIORITY).click()
-        self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, True, 2)
+        print("+++-+++-+++-+++", self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, True, 2))
 
     def click_assignee_element(self):
         self.driver.find_element(*self.ISSUE_ASSIGNEE).click()
@@ -85,7 +85,6 @@ class IssueDetailsFragment(BasePageObject):
         if summary_name is not None:
             if summary_name != "" or true_if_allow_empty_input:
                 self.click_summary_element()
-                print("---+---+---+---", self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True))
                 summary_input = self.driver.find_element(*self.ISSUE_SUMMARY_INPUT)
                 summary_input.clear()
                 summary_input.send_keys(summary_name)
