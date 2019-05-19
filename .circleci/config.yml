@@ -63,21 +63,19 @@ jobs:
           name: aqa-python run tests
           command: |
             . venv/bin/activate
-            mkdir tests/reports
-            mkdir tests/reports/allure-results
-            mkdir tests/reports/allure-report
-            pytest --alluredir=tests/reports/allure-results
+            mkdir allure-results/
+            mkdir allure-report/
+            pytest --alluredir=allure-results
 
       - store_test_results:
-          path: tests/reports/allure-results
+          path: allure-results
 
       - run:
           name: show allure report
           command: |
-            cd tests/reports
-            allure generate -c tests/reports/allure-results -o tests/reports/allure-report
+            allure generate -c allure-results -o allure-report
 
       - store_artifacts:
-          path: tests/reports/allure-results
-          destination: tests/reports/allure-results
+          path: allure-report
+          destination: allure-report
 
