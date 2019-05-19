@@ -51,11 +51,11 @@ jobs:
           name: aqa-python run tests
           command: |
             . venv/bin/activate
-            mkdir tests/reports
+            mkdir tests/reports/allure-results
             pytest --alluredir=tests/reports
 
       - store_test_results:
-          path: tests/reports
+          path: tests/reports/allure-results
 
       - store_artifacts:
-          path: tests/reports
+          path: tests/reports/allure-results
