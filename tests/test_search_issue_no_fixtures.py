@@ -9,6 +9,7 @@ from tests.page_objects.browse_issue_page_object import BrowseIssuePageObject
 from tests.page_objects.search_page_object import SearchPageObject
 
 
+@pytest.mark.ui
 class TestSearchIssue:
     created_issues = []
     ISSUE_PROJECT = "Webinar (WEBINAR)"

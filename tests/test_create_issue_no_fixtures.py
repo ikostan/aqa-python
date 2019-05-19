@@ -8,6 +8,7 @@ from tests.page_objects.create_issue_modal_page_object import CreateIssueModalNo
 from tests.page_objects.browse_issue_page_object import BrowseIssuePageObject
 
 
+@pytest.mark.ui
 class TestCreateIssue:
     created_issues = []
 
