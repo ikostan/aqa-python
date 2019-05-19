@@ -45,9 +45,11 @@ jobs:
       - run:
           name: install allure
           command: |
-            sudo apt-get install software-properties-common
-            deb http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
-            deb-src http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
+            uname -a
+            sudo npm install -g allure-commandline --save-dev
+#            sudo apt-get install software-properties-common
+#            deb http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
+#            deb-src http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
 #            sudo apt-add-repository ppa:qameta/allure
 #            sudo apt-get update
 #            sudo apt-get install allure
