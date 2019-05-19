@@ -51,6 +51,7 @@ jobs:
           name: aqa-python run tests
           command: |
             . venv/bin/activate
+            mkdir tests/reports
             mkdir tests/reports/allure-results
             pytest --alluredir=tests/reports
 
