@@ -1,4 +1,5 @@
 import pytest
+import allure
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from tests.page_objects.login_page_object import LoginPageObject
@@ -36,11 +37,13 @@ class TestCreateIssue:
         if self.create_issue_modal.is_modal_existing():
             self.create_issue_modal.cancel_creation()
 
+    @allure.step("Populate the issue form and submit")
     def populate_create_issue_modal(self, project, issue_type, summary, description, priority):
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
         self.create_issue_modal.wait_until_modal_is_opened(5)
         self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
 
+    @allure.title("JIRA. Create issue - positive (no fixtures)")
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
             ("Webinar (WEBINAR)", "Bug", "Test summary (QA) Without Description", None, "Medium", None, True),
@@ -53,15 +56,17 @@ class TestCreateIssue:
     def test_create_issue_positive(self, project, issue_type, summary, description, priority, error_message_expect,
                                    is_modal_closed_expect):
         self.populate_create_issue_modal(project, issue_type, summary, description, priority)
-        self.dashboard.flag.wait_until_flag_is_shown()
-        self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
-        flag_summary_actual = self.dashboard.flag.get_new_issue_data()["summary"]
-        is_modal_closed_actual = self.create_issue_modal.wait_until_modal_is_not_opened(2)
-        error_message_actual = self.create_issue_modal.get_issue_summary_error_message()
-        assert flag_summary_actual == summary
-        assert is_modal_closed_actual == is_modal_closed_expect
-        assert error_message_actual == error_message_expect
+        with allure.step("Wait for successful flag and get issue data"):
+            self.dashboard.flag.wait_until_flag_is_shown()
+            self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
+        with allure.step("Check the correct issue summary in the flag"):
+            assert self.dashboard.flag.get_new_issue_data()["summary"] == summary
+        with allure.step("Check the issue form is closed"):
+            assert self.create_issue_modal.wait_until_modal_is_not_opened(2) == is_modal_closed_expect
+        with allure.step("Check the error message existing"):
+            assert self.create_issue_modal.get_issue_summary_error_message() == error_message_expect
 
+    @allure.title("JIRA. Create issue - negative (no fixtures)")
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
             ("Webinar (WEBINAR)", "Bug", None, None, "Medium", "You must specify a summary of the issue.", False),
@@ -72,8 +77,7 @@ class TestCreateIssue:
     def test_create_issue_negative(self, project, issue_type, summary, description, priority, error_message_expect,
                                    is_modal_closed_expect):
         self.populate_create_issue_modal(project, issue_type, summary, description, priority)
-        is_modal_closed_actual = self.create_issue_modal.wait_until_modal_is_not_opened(2)
-        error_message_actual = self.create_issue_modal.get_issue_summary_error_message()
-        assert error_message_actual == error_message_expect
-        assert is_modal_closed_actual == is_modal_closed_expect
-
+        with allure.step("Check the correct error message is shown"):
+            assert self.create_issue_modal.get_issue_summary_error_message() == error_message_expect
+        with allure.step("Check the issue form wasn't closed"):
+            assert self.create_issue_modal.wait_until_modal_is_not_opened(2) == is_modal_closed_expect

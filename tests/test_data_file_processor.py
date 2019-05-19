@@ -1,6 +1,7 @@
 from src.data_file_processor import DataFileProcessor
 import os
 import json
+import allure
 
 processor = DataFileProcessor()
 xml_path = os.path.dirname(os.path.realpath(__file__)) + "/samples/xml/test_data.xml"
@@ -156,17 +157,20 @@ def get_json_file_content(json_file_path):
 
 
 # TESTS SECTION
+@allure.title("File processor. Test XML is existing")
 def test_xml_is_existing():
     is_existing = os.path.isfile(xml_path)
     assert is_existing
 
 
+@allure.title("File processor. Loaded XML content is correct")
 def test_loaded_xml_content():
     got_xml_content = processor.get_python_structure_from_xml(xml_path)
     test_result = compare_dicts_lists(got_xml_content["persons"], original_content["persons"])
     assert test_result[0], test_result[1]
 
 
+@allure.title("File processor. XML content is updated correctly")
 def test_updated_content():
     got_xml_content = processor.get_python_structure_from_xml(xml_path)
     got_updated_content = processor.update_python_structure(got_xml_content, old_to_new_values)
@@ -174,6 +178,7 @@ def test_updated_content():
     assert test_result[0], test_result[1]
 
 
+@allure.title("File processor. JSON is created")
 def test_json_is_existing():
     processor.data_file_processing(xml_path, json_path, old_to_new_values)
     is_existing = os.path.isfile(json_path)
@@ -181,6 +186,7 @@ def test_json_is_existing():
     assert is_existing, "file " + json_path + " was not created"
 
 
+@allure.title("File processor. JSON content is updated correctly")
 def test_json_content():
     processor.data_file_processing(xml_path, json_path, old_to_new_values)
     got_json_content = get_json_file_content(json_path)
