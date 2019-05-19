@@ -28,7 +28,6 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
 
       - run:
           name: install dependencies
@@ -36,6 +35,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+          when: always
 
       - save_cache:
           paths:
@@ -47,18 +47,8 @@ jobs:
           command: |
             uname -a
             sudo npm install -g allure-commandline --save-dev
-#            sudo apt-get install software-properties-common
-#            deb http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
-#            deb-src http://ppa.launchpad.net/qameta/allure/ubuntu xenial main
-#            sudo apt-add-repository ppa:qameta/allure
-#            sudo apt-get update
-#            sudo apt-get install allure
-#
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
+          when: always
+
       - run:
           name: aqa-python run tests
           command: |
@@ -66,6 +56,7 @@ jobs:
             mkdir allure-results/
             mkdir allure-report/
             pytest --alluredir=allure-results
+          when: always
 
       - store_test_results:
           path: allure-results
@@ -74,6 +65,7 @@ jobs:
           name: show allure report
           command: |
             allure generate -c allure-results -o allure-report
+          when: always
 
       - store_artifacts:
           path: allure-report
