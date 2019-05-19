@@ -53,7 +53,7 @@ jobs:
             . venv/bin/activate
             mkdir tests/reports
             mkdir tests/reports/allure-results
-            pytest --alluredir=tests/reports
+            pytest --alluredir=tests/reports/allure-results
 
       - store_test_results:
           path: tests/reports/allure-results
