@@ -1,13 +1,29 @@
 # AQA Python course
 
-## Modules
 
-*fibonacci.py* - contains the method that generates the fibonacci sequence of a given length and return it as list
+## Allure reports
 
-*test_fibonacci.py* - contains the bunch of tests which checks the generated sequence is equal to expected one
+allure reports folder: 
+
+`tests/reports/allure-results`
+
+generate and show allure report:
+
+`allure serve tests/reports/allure-results`
+
 
 ## Run tests
 
-in project folder: `$ pytest`
+### Run all tests 
+`$ pytest --alluredir=tests/reports/allure-results`
 
-circleci
+### Run "unite" tests
+- fibonacci
+- XML to JSON file processor
+ 
+`$ pytest -m unit --alluredir=tests/reports/allure-results`
+
+### Run UI tests
+ 
+`$ pytest -m ui --alluredir=tests/reports/allure-results`
+
