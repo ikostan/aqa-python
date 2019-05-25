@@ -3,6 +3,8 @@ import allure
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from tests.page_objects.login_page_object import LoginPageObject
+from tests.rest.rest_client import RestClient
+from tests.credentials import credentials
 
 
 @pytest.fixture(scope="module")
@@ -18,6 +20,23 @@ def login_and_get_driver():
         pass
 
 
+@pytest.fixture(scope="module")
+def rest_set_session_with_login():
+    rest = RestClient()
+    user = get_user_creds()
+    rest.set_session_with_login(user['login'], user['pass'])
+    yield rest
+    rest.delete_all_my_issues()
+
+
+@pytest.fixture(scope="module")
+def rest_set_session_without_login():
+    rest = RestClient()
+    user = get_user_creds()
+    rest.set_session_without_login(user['login'], user['pass'])
+    yield rest
+
+
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
 def pytest_runtest_makereport(item):
     outcome = yield
@@ -31,3 +50,7 @@ def pytest_runtest_makereport(item):
                               attachment_type=allure.attachment_type.PNG)
             except Exception as e:
                 print(e)
+
+
+def get_user_creds():
+    return {'login': credentials.user_login, 'pass': credentials.user_password}
