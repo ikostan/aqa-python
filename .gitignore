@@ -6,3 +6,6 @@ venv/
 samples/json/*.json
 tests/samples/json/*.json
 *experiment*
+tests/reports/
+#tests/reports/*
+#!tests/reports/__init__.py
