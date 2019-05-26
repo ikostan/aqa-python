@@ -4,7 +4,7 @@ from tests.rest.rest_issue_create import RestIssueCreate
 
 
 @pytest.mark.rest
-class TestRestLogin:
+class TestRestCreate:
 
     @pytest.fixture(scope="module", autouse=True)
     def create(self, rest_set_session):
@@ -18,7 +18,7 @@ class TestRestLogin:
         ("Test Summary 3", "Test Summary 3 Description", "Bug", None, 201),
         ("Test Summary 4", "Test Summary 4 Description", "Bug", None, 201),
     ])
-    def test_login(self, create, summary, description, issue_type, assignee_name, status_code):
+    def test_create_issue(self, create, summary, description, issue_type, assignee_name, status_code):
         with allure.step("Send request"):
             r = create.rest_jira_create_issue(summary, description, issue_type, assignee_name)
         with allure.step("Check the status code"):
