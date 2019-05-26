@@ -47,3 +47,15 @@ class RestIssueCreate(RestIssue):
         body_section = dict(priority={})
         body_section["priority"].update(dict(name=priority_name))
         return body_section
+
+    # actions
+    def create_issue(self, summary, issue_type_name, project_key=None, description=None, assignee_name=None,
+                     priority_name=None):
+        if project_key is None or project_key == "": project_key = self.JIRA_PROJECT_KEY
+        return self.rest_jira_create_issue(summary, issue_type_name, project_key, description, assignee_name,
+                                           priority_name)
+
+    def create_issues(self, list_of_tuples):
+        if len(list_of_tuples) > 0:
+            for one_tuple in list_of_tuples:
+                self.create_issue(one_tuple[0], one_tuple[1], one_tuple[2], one_tuple[3], one_tuple[4], one_tuple[5])
