@@ -5,7 +5,7 @@ from tests.rest.rest_search_search import RestSearchSearch
 
 
 @pytest.mark.rest
-class TestRestCreate:
+class TestRestSearch:
 
     list_of_issues = [
         ("PythonAQA: Issue For Searching 01", "Bug", None, "Description 01", None, "Medium"),
@@ -34,7 +34,7 @@ class TestRestCreate:
                                  ("text ~ 'PythonAQA: Issue For Searching'", 10, 200),
                                  ("text ~ 'SomeIncorrectValueThatNeverWillBeFound'", 0, 200),
                              ])
-    def test_create_issue(self, search, jql, results_number, status_code):
+    def test_search_issue(self, search, jql, results_number, status_code):
         with allure.step("Send request"):
             r = search.rest_jira_search_issues(jql, results_number)
         with allure.step("Check the status code"):
