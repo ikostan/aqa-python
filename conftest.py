@@ -3,6 +3,9 @@ import allure
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from tests.page_objects.login_page_object import LoginPageObject
+from tests.rest.rest_session_login import RestSessionLogin
+from tests.rest.rest_search_search import RestSearchSearch
+from tests.rest.rest_issue_delete import RestIssueDelete
 
 
 @pytest.fixture(scope="module")
@@ -16,6 +19,16 @@ def login_and_get_driver():
         # driver.quit()
     except:
         pass
+
+
+@pytest.fixture(scope="module")
+def rest_set_session():
+    login = RestSessionLogin()
+    cookie = login.start_session()
+    yield cookie
+    search = RestSearchSearch(cookie)
+    delete = RestIssueDelete(cookie)
+    delete.delete_issues(search.get_all_my_issue_ids())
 
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)

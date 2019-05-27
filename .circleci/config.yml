@@ -70,4 +70,3 @@ jobs:
       - store_artifacts:
           path: allure-report
           destination: allure-report
-

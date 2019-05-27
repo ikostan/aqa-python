@@ -27,3 +27,6 @@ generate and show allure report:
  
 `$ pytest -m ui --alluredir=tests/reports/allure-results`
 
+### Run REST tests
+ 
+`$ pytest -m rest --alluredir=tests/reports/allure-results`
