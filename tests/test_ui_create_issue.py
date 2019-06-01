@@ -24,18 +24,13 @@ class TestCreateIssue:
         self.driver = before_after["driver"]
         self.dashboard = before_after["dashboard"]
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-        with allure.step("Open the Dashboard then open Create issue modal"):
-        # with allure.step("Open the Dashboard and click the Create button"):
-            self.dashboard.open_page()
-            i = 0
-            while i < 3 and self.create_issue_modal.is_modal_existing() is False:
-                self.dashboard.header_toolbar.click_create_button()
-                self.create_issue_modal.wait_until_modal_is_opened(5)
-                i += 1
-            # self.dashboard.header_toolbar.click_create_button()
-        # with allure.step("Populate issue form and submit"):
-            # self.create_issue_modal.wait_until_modal_is_opened(5)
-            self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
+        self.dashboard.open_page()
+        i = 0
+        while i < 3 and self.create_issue_modal.is_modal_existing() is False:
+            self.dashboard.header_toolbar.click_create_button()
+            self.create_issue_modal.wait_until_modal_is_opened(5)
+            i += 1
+        self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
 
     @allure.title("JIRA. Create issue - positive (fixtures)")
     @pytest.mark.parametrize(
@@ -49,7 +44,7 @@ class TestCreateIssue:
         ])
     def test_create_issue_positive(self, before_all_and_after_all, project, issue_type, summary, description, priority,
                                    error_message_expect, is_modal_closed_expect):
-        with allure.step("Test setup:"):
+        with allure.step("Open the Dashboard then open Create issue modal"):
             self.before_each(before_all_and_after_all, project, issue_type, summary, description, priority)
         with allure.step("Wait for successful flag and get issue data"):
             self.dashboard.flag.wait_until_flag_is_shown()
@@ -71,7 +66,7 @@ class TestCreateIssue:
         ])
     def test_create_issue_negative(self, before_all_and_after_all, project, issue_type, summary, description, priority,
                                    error_message_expect, is_modal_closed_expect):
-        with allure.step("Test setup:"):
+        with allure.step("Open the Dashboard then open Create issue modal"):
             self.before_each(before_all_and_after_all, project, issue_type, summary, description, priority)
         with allure.step("Wait for error message and cancel the creation"):
             is_modal_closed_actual = self.create_issue_modal.wait_until_modal_is_not_opened(1)
