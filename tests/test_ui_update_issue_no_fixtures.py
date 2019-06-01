@@ -17,16 +17,19 @@ class TestSearchIssue:
     ISSUE_DESCRIPTION = "Description of the <Issue Should Be Updated #WDN1>"
     ISSUE_PRIORITY = "Medium"
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
+    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     def setup_class(self):
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.login = LoginPageObject(self.driver)
         self.login.enter_site_as_test_user()
         self.dashboard = DashboardPageObject(self.driver)
         self.dashboard.open_page()
-        self.dashboard.header_toolbar.click_create_button()
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-        self.create_issue_modal.wait_until_modal_is_opened(5)
+        i = 0
+        while i < 3 and self.create_issue_modal.is_modal_existing() is False:
+            self.dashboard.header_toolbar.click_create_button()
+            self.create_issue_modal.wait_until_modal_is_opened(5)
+            i += 1
         self.create_issue_modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE,
                                                                  self.ISSUE_SUMMARY, self.ISSUE_DESCRIPTION,
                                                                  self.ISSUE_PRIORITY)

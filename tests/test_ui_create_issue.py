@@ -24,11 +24,17 @@ class TestCreateIssue:
         self.driver = before_after["driver"]
         self.dashboard = before_after["dashboard"]
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-        with allure.step("Open the Dashboard and click the Create button"):
+        with allure.step("Open the Dashboard then open Create issue modal"):
+        # with allure.step("Open the Dashboard and click the Create button"):
             self.dashboard.open_page()
-            self.dashboard.header_toolbar.click_create_button()
-        with allure.step("Populate issue form and submit"):
-            self.create_issue_modal.wait_until_modal_is_opened(5)
+            i = 0
+            while i < 3 and self.create_issue_modal.is_modal_existing() is False:
+                self.dashboard.header_toolbar.click_create_button()
+                self.create_issue_modal.wait_until_modal_is_opened(5)
+                i += 1
+            # self.dashboard.header_toolbar.click_create_button()
+        # with allure.step("Populate issue form and submit"):
+            # self.create_issue_modal.wait_until_modal_is_opened(5)
             self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
 
     @allure.title("JIRA. Create issue - positive (fixtures)")
