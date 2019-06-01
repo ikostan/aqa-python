@@ -26,7 +26,6 @@ class TestCreateIssue:
             self.browse_issue_page.issue_details.delete_issue()
         try:
             self.driver.close()
-            # driver.quit()
         except:
             pass
 
