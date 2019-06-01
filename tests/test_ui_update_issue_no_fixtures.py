@@ -17,7 +17,6 @@ class TestSearchIssue:
     ISSUE_DESCRIPTION = "Description of the <Issue Should Be Updated #WDN1>"
     ISSUE_PRIORITY = "Medium"
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     def setup_class(self):
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.login = LoginPageObject(self.driver)
@@ -38,7 +37,6 @@ class TestSearchIssue:
         self.create_issue_modal.wait_until_modal_is_not_opened(2)
         self.browse_issue_page = BrowseIssuePageObject(self.driver, self.created_issues[0])
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=2)
     def teardown_class(self):
         for issue in self.created_issues:
             self.driver.fullscreen_window()
@@ -54,7 +52,6 @@ class TestSearchIssue:
     def setup_method(self):
         self.browse_issue_page.open_page_by_url()
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @allure.title("JIRA. Issue summary is updated")
     def test_update_issue_summary(self):
         with allure.step("Update summary by valid value"):
@@ -65,7 +62,6 @@ class TestSearchIssue:
         with allure.step("Check the updated summary value"):
             assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_new
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @allure.title("JIRA. Issue priority is updated")
     def test_update_issue_priority(self):
         with allure.step("Select another priority"):
@@ -76,7 +72,6 @@ class TestSearchIssue:
         with allure.step("Check the updated priority value"):
             assert self.browse_issue_page.issue_details.get_issue_priority() == issue_priority_new
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @allure.title("JIRA. Issue assignee is updated")
     def test_update_issue_assignee(self):
         with allure.step("Select another assignee"):
@@ -87,7 +82,6 @@ class TestSearchIssue:
         with allure.step("Check the updated assignee value"):
             assert self.browse_issue_page.issue_details.get_issue_assignee() == issue_assignee_new
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @allure.title("JIRA. Issue summary is not updated if inputted string is longer than 256 char")
     def test_update_issue_summary_256(self):
         with allure.step("Update summary by invalid value"):
@@ -103,7 +97,6 @@ class TestSearchIssue:
         with allure.step("Check the proper error message is shown"):
             assert error_message == "Summary must be less than 255 characters."
 
-    # @pytest.mark.flaky(reruns=3, reruns_delay=2)
     @allure.title("JIRA. Issue summary is not updated if new value is empty string")
     def test_update_issue_summary_empty(self):
         with allure.step("Update summary by invalid value"):

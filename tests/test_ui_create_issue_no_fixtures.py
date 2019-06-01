@@ -33,8 +33,6 @@ class TestCreateIssue:
     def setup_method(self):
         self.dashboard.open_page()
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-        # self.dashboard.header_toolbar.click_create_button()
-        # self.create_issue_modal.wait_until_modal_is_opened(5)
         i = 0
         while i < 3 and self.create_issue_modal.is_modal_existing() is False:
             self.dashboard.header_toolbar.click_create_button()
@@ -45,12 +43,6 @@ class TestCreateIssue:
         if self.create_issue_modal.is_modal_existing():
             self.create_issue_modal.cancel_creation()
 
-    # @allure.step("Populate the issue form and submit")
-    # def populate_create_issue_modal(self, project, issue_type, summary, description, priority):
-    #     self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-    #     self.create_issue_modal.wait_until_modal_is_opened(5)
-    #     self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
-    #
     @allure.title("JIRA. Create issue - positive (no fixtures)")
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
@@ -64,7 +56,6 @@ class TestCreateIssue:
     def test_create_issue_positive(self, project, issue_type, summary, description, priority, error_message_expect,
                                    is_modal_closed_expect):
         with allure.step("Populate the issue form and submit"):
-            # self.populate_create_issue_modal(project, issue_type, summary, description, priority)
             self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
         with allure.step("Wait for successful flag and get issue data"):
             self.dashboard.flag.wait_until_flag_is_shown()
@@ -87,7 +78,6 @@ class TestCreateIssue:
     def test_create_issue_negative(self, project, issue_type, summary, description, priority, error_message_expect,
                                    is_modal_closed_expect):
         with allure.step("Populate the issue form and submit"):
-            # self.populate_create_issue_modal(project, issue_type, summary, description, priority)
             self.create_issue_modal.populate_fields_and_click_create(project, issue_type, summary, description, priority)
         with allure.step("Check the correct error message is shown"):
             assert self.create_issue_modal.get_issue_summary_error_message() == error_message_expect
