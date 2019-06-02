@@ -86,6 +86,9 @@ class BasePageObject:
     def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=5):
         return self.do_wait(EC.alert_is_present(), true_or_false_for_present_or_not, timeout)
 
+    def wait_until_element_attribute_is(self, locator, attribute, value, true_or_false_for_is_or_is_not, timeout=5):
+        return self.do_wait(ElementAttributeIs(locator, attribute, value), true_or_false_for_is_or_is_not, timeout)
+
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value, true_to_hit_enter_after_tab=False):
         self.wait_until_element_is_present(combobox_locator, True, 4)
@@ -139,7 +142,38 @@ class BasePageObject:
         if true_to_hit_enter_after_tab:
             combobox_element_input.send_keys(Keys.ENTER)
 
+    def input_into_combobox(self, combobox_input_locator, item_value, true_to_wait_for_dropdown=True,
+                            true_to_hit_enter_after_tab=False):
+        self.wait_until_element_is_present(combobox_input_locator, True, 5)
+        combobox_element_input = self.driver.find_element(*combobox_input_locator)
+        combobox_element_input.click()
+        if true_to_wait_for_dropdown:
+            self.wait_until_element_attribute_is(combobox_input_locator, "aria-expanded", "true", True, 2)
+        # it is crutch, I know
+        for combo in range(15):
+            combobox_element_input.send_keys(Keys.DELETE)
+        for combo in range(15):
+            combobox_element_input.send_keys(Keys.BACKSPACE)
+        combobox_element_input.send_keys(item_value)
+        combobox_element_input.send_keys(Keys.TAB)
+        if true_to_hit_enter_after_tab:
+            combobox_element_input.send_keys(Keys.ENTER)
+
     def alert_wait_and_confirm(self, timeout=2):
         if self.wait_until_alert_is_present(True, timeout):
             self.driver.switch_to.alert.accept()
         self.wait_until_alert_is_present(False, timeout)
+
+
+class ElementAttributeIs(object):
+    def __init__(self, locator, attribute_name, expected_attribute_value):
+        self.locator = locator
+        self.attribute = attribute_name
+        self.value = expected_attribute_value
+
+    def __call__(self, driver):
+        element = driver.find_element(*self.locator)
+        if element.get_attribute(self.attribute) == self.value:
+            return element
+        else:
+            return False
