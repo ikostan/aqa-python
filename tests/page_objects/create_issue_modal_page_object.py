@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from tests.page_objects.base_page_object import BasePageObject
 
 
-class CreateIssueModalNoFixtures(BasePageObject):
+class CreateIssueModal(BasePageObject):
     MODAL = (By.ID, "create-issue-dialog")
     SPINNER = (By.CSS_SELECTOR, ".throbber.loading aui-spinner")
     PROJECT_COMBOBOX = (By.ID, "project-single-select")

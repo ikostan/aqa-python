@@ -4,7 +4,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from tests.page_objects.login_page_object import LoginPageObject
 from tests.page_objects.dashboard_page_object import DashboardPageObject
-from tests.page_objects.create_issue_modal_page_object import CreateIssueModalNoFixtures
+from tests.page_objects.create_issue_modal_page_object import CreateIssueModal
 from tests.page_objects.browse_issue_page_object import BrowseIssuePageObject
 from tests.page_objects.search_page_object import SearchPageObject
 
@@ -18,29 +18,26 @@ class TestSearchIssue:
     ISSUE_DESCRIPTION = "Description of the <Checking Searching Feature With Selenium Python AQA>"
     ISSUE_PRIORITY = "Medium"
 
-    # @allure.step("Login and create an issue")
     def setup_class(self):
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.login = LoginPageObject(self.driver)
         self.login.enter_site_as_test_user()
         self.dashboard = DashboardPageObject(self.driver)
         self.dashboard.open_page()
-        self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
+        self.modal = CreateIssueModal(self.driver)
         # self.dashboard.header_toolbar.click_create_button()
         # self.create_issue_modal.wait_until_modal_is_opened(5)
         i = 0
-        while i < 3 and self.create_issue_modal.is_modal_existing() is False:
+        while i < 3 and self.modal.is_modal_existing() is False:
             self.dashboard.header_toolbar.click_create_button()
-            self.create_issue_modal.wait_until_modal_is_opened(5)
+            self.modal.wait_until_modal_is_opened(5)
             i += 1
-        self.create_issue_modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE,
-                                                                 self.ISSUE_SUMMARY, self.ISSUE_DESCRIPTION,
-                                                                 self.ISSUE_PRIORITY)
+        self.modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, self.ISSUE_SUMMARY,
+                                                    self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
         self.dashboard.flag.wait_until_flag_is_shown()
         self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
-        self.create_issue_modal.wait_until_modal_is_not_opened(2)
+        self.modal.wait_until_modal_is_not_opened(2)
 
-    # @allure.step("Remove all the created issues and close driver")
     def teardown_class(self):
         for issue in self.created_issues:
             self.driver.fullscreen_window()

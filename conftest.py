@@ -8,7 +8,7 @@ from tests.rest.rest_search_search import RestSearchSearch
 from tests.rest.rest_issue_delete import RestIssueDelete
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def login_and_get_driver():
     driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
     login_page = LoginPageObject(driver)
@@ -16,7 +16,6 @@ def login_and_get_driver():
     yield driver
     try:
         driver.close()
-        # driver.quit()
     except Exception as e:
         print(e)
         pass

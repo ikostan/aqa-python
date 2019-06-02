@@ -39,18 +39,8 @@ class BasePageObject:
         return self.driver.current_url
 
     # element states
-    def is_element_displayed(self, element, timeout=0):
-        self.driver.implicitly_wait(timeout)
-        try:
-            self.driver.find_element(*element)
-            result = True
-        except Exception as e:
-            print(e)
-            result = False
-        finally:
-            method_result = result
-        self.driver.implicitly_wait(self.DEF_TIMEOUT)
-        return method_result
+    def is_element_displayed(self, locator, timeout=1):
+        return self.wait_until_element_is_present(locator, True, timeout)
 
     def is_string_contains_substring(self, string, sub_string):
         if sub_string in string:
@@ -101,29 +91,38 @@ class BasePageObject:
         self.wait_until_element_is_present(combobox_locator, True, 4)
         combobox_element = self.driver.find_element(*combobox_locator)
         combobox_locator_click_result = False
-        i = 0
-        while i < 5 and combobox_locator_click_result is not True:
+        i1 = 0
+        while i1 < 10 and combobox_locator_click_result is not True:
             try:
                 combobox_element.click()
                 combobox_locator_click_result = True
             except Exception as e:
                 print(e)
                 combobox_locator_click_result = False
-            i += 1
-        combobox_element_input = combobox_element.find_element_by_css_selector("input")
+            i1 += 1
+        combobox_input_displayed_result = False
+        i2 = 0
+        while i2 < 10 and combobox_input_displayed_result is not True:
+            try:
+                combobox_element_input = combobox_element.find_element_by_css_selector("input")
+                combobox_input_displayed_result = combobox_element_input.is_displayed()
+            except Exception as e:
+                print(e)
+                combobox_input_displayed_result = False
+            i2 += 1
         combobox_input_click_result = False
-        j = 0
-        while j < 5 and combobox_input_click_result is not True:
+        i3 = 0
+        while i3 < 10 and combobox_input_click_result is not True:
             try:
                 combobox_element_input.click()
                 combobox_input_click_result = True
             except Exception as e:
                 print(e)
                 combobox_input_click_result = False
-            j += 1
+            i3 += 1
         combobox_input_clear_result = False
-        k = 0
-        while k < 5 and combobox_input_clear_result is not True:
+        i4 = 0
+        while i4 < 10 and combobox_input_clear_result is not True:
             try:
                 # it is crutch, I know
                 for combo in range(15):
@@ -134,7 +133,7 @@ class BasePageObject:
             except Exception as e:
                 print(e)
                 combobox_input_clear_result = False
-            k += 1
+            i4 += 1
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
         if true_to_hit_enter_after_tab:
