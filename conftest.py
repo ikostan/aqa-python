@@ -14,11 +14,11 @@ def login_and_get_driver():
     login_page = LoginPageObject(driver)
     login_page.enter_site_as_test_user()
     yield driver
-    try:
-        driver.close()
-    except Exception as e:
-        print(e)
-        pass
+    # try:
+    #     driver.close()
+    # except Exception as e:
+    #     print(e)
+    #     pass
 
 
 @pytest.fixture(scope="module")

@@ -18,6 +18,11 @@ class TestCreateIssue:
             browse_issue_page = BrowseIssuePageObject(driver, issue)
             browse_issue_page.open_page_by_url()
             browse_issue_page.issue_details.delete_issue()
+        try:
+            driver.close()
+        except Exception as e:
+            print(e)
+            pass
 
     @pytest.fixture(autouse=True)
     def objects(self, driver):
