@@ -18,53 +18,38 @@ class TestUpdateIssue:
     ISSUE_PRIORITY = "Medium"
 
     def setup_class(self):
-        with allure.step("Setup class 1"):
-            self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-        with allure.step("Setup class 2"):
-            self.login = LoginPageObject(self.driver)
-        with allure.step("Setup class 3"):
-            self.login.enter_site_as_test_user()
-        with allure.step("Setup class 4"):
-            self.dashboard = DashboardPageObject(self.driver)
-        with allure.step("Setup class 5"):
-            self.dashboard.open_page()
-        with allure.step("Setup class 6"):
-            self.modal = CreateIssueModal(self.driver)
-        with allure.step("Setup class 7"):
-            i = 0
-            while i < 3 and self.modal.is_modal_existing() is False:
-                self.dashboard.header_toolbar.click_create_button()
-                self.modal.wait_until_modal_is_opened(5)
-                i += 1
-        with allure.step("Setup class 8"):
-            self.modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, self.ISSUE_SUMMARY,
-                                                        self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
-        with allure.step("Setup class 9"):
-            self.dashboard.flag.wait_until_flag_is_shown()
-        with allure.step("Setup class 10"):
-            self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
-        with allure.step("Setup class 11"):
-            self.modal.wait_until_modal_is_not_opened(2)
-        with allure.step("Setup class 12"):
-            self.browse_issue_page = BrowseIssuePageObject(self.driver, self.created_issues[0])
+        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        self.login = LoginPageObject(self.driver)
+        self.login.enter_site_as_test_user()
+        self.dashboard = DashboardPageObject(self.driver)
+        self.dashboard.open_page()
+        self.modal = CreateIssueModal(self.driver)
+        i = 0
+        while i < 3 and self.modal.is_modal_existing() is False:
+            self.dashboard.header_toolbar.click_create_button()
+            self.modal.wait_until_modal_is_opened(5)
+            i += 1
+        self.modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, self.ISSUE_SUMMARY,
+                                                    self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
+        self.dashboard.flag.wait_until_flag_is_shown()
+        self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
+        self.modal.wait_until_modal_is_not_opened(2)
+        self.browse_issue_page = BrowseIssuePageObject(self.driver, self.created_issues[0])
 
     def teardown_class(self):
-        with allure.step("Teardown class 1"):
-            for issue in self.created_issues:
-                self.driver.fullscreen_window()
-                self.browse_issue_page = BrowseIssuePageObject(self.driver, issue)
-                self.browse_issue_page.open_page_by_url()
-                self.browse_issue_page.issue_details.delete_issue()
-        with allure.step("Teardown class 2"):
-            try:
-                self.driver.close()
-            except Exception as e:
-                print(e)
-                pass
+        for issue in self.created_issues:
+            self.driver.fullscreen_window()
+            self.browse_issue_page = BrowseIssuePageObject(self.driver, issue)
+            self.browse_issue_page.open_page_by_url()
+            self.browse_issue_page.issue_details.delete_issue()
+        try:
+            self.driver.close()
+        except Exception as e:
+            print(e)
+            pass
 
     def setup_method(self):
-        with allure.step("Setup method 1"):
-            self.browse_issue_page.open_page_by_url()
+        self.browse_issue_page.open_page_by_url()
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue summary is updated")
