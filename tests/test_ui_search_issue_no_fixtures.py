@@ -25,9 +25,14 @@ class TestSearchIssue:
         self.login.enter_site_as_test_user()
         self.dashboard = DashboardPageObject(self.driver)
         self.dashboard.open_page()
-        self.dashboard.header_toolbar.click_create_button()
         self.create_issue_modal = CreateIssueModalNoFixtures(self.driver)
-        self.create_issue_modal.wait_until_modal_is_opened(5)
+        # self.dashboard.header_toolbar.click_create_button()
+        # self.create_issue_modal.wait_until_modal_is_opened(5)
+        i = 0
+        while i < 3 and self.create_issue_modal.is_modal_existing() is False:
+            self.dashboard.header_toolbar.click_create_button()
+            self.create_issue_modal.wait_until_modal_is_opened(5)
+            i += 1
         self.create_issue_modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE,
                                                                  self.ISSUE_SUMMARY, self.ISSUE_DESCRIPTION,
                                                                  self.ISSUE_PRIORITY)
@@ -44,13 +49,15 @@ class TestSearchIssue:
             self.browse_issue_page.issue_details.delete_issue()
         try:
             self.driver.close()
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     # @allure.step("Open the Dashboard page")
     def setup_method(self):
         self.dashboard.open_page()
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue is found")
     @pytest.mark.parametrize("case_method", [None, "lower", "upper"])
     def test_search_issue(self, case_method):
@@ -69,6 +76,7 @@ class TestSearchIssue:
         with allure.step("Check the found issue has correct summary"):
             assert self.search_page.issue.get_issue_summary() == self.ISSUE_SUMMARY
 
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue is not found (no result message is got)")
     def test_search_issue_not_found(self):
         with allure.step("Populate search field and submit"):

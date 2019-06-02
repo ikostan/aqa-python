@@ -12,10 +12,10 @@ class HeaderToolbarFragment(BasePageObject):
     def __init__(self, driver):
         super().__init__(driver)
 
-    def wait_until_login_link_is_present(self, timeout=10):
+    def wait_until_login_link_is_present(self, timeout=5):
         return self.wait_until_element_is_present(self.LOGIN_LINK, True, timeout)
 
-    def wait_until_user_button_is_present(self, timeout=10):
+    def wait_until_user_button_is_present(self, timeout=5):
         return self.wait_until_element_is_present(self.USER_BUTTON, True, timeout)
 
     def click_create_button(self):

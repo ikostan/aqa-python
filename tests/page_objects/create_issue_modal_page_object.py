@@ -69,8 +69,18 @@ class CreateIssueModalNoFixtures(BasePageObject):
     def populate_summary(self, summary_content=None):
         if summary_content is not None and summary_content != "":
             element = self.driver.find_element(*self.ISSUE_SUMMARY)
-            element.clear()
-            element.send_keys(summary_content)
+            self.wait_until_element_is_clickable(self.ISSUE_SUMMARY, True)
+            interact_result = False
+            i = 0
+            while i < 5 and interact_result is not True:
+                try:
+                    element.clear()
+                    element.send_keys(summary_content)
+                    interact_result = True
+                except Exception as e:
+                    print(e)
+                    interact_result = False
+                i += 1
             self.wait_until_data_is_stored()
 
     def populate_description(self, description_content=None):

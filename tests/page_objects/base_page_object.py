@@ -44,7 +44,8 @@ class BasePageObject:
         try:
             self.driver.find_element(*element)
             result = True
-        except:
+        except Exception as e:
+            print(e)
             result = False
         finally:
             method_result = result
@@ -72,39 +73,68 @@ class BasePageObject:
             elif not true_or_false_for_until_or_not:
                 WebDriverWait(self.driver, timeout).until_not(expected_condition)
                 result = True
-        except:
+        except Exception as e:
+            print(e)
             result = False
         finally:
             method_result = result
         self.driver.implicitly_wait(self.DEF_TIMEOUT)
         return method_result
 
-    def wait_until_element_is_present(self, element, true_or_false_for_present_or_not, timeout=5):
-        return self.do_wait(EC.presence_of_element_located(element), true_or_false_for_present_or_not, timeout)
+    def wait_until_element_is_present(self, locator, true_or_false_for_present_or_not, timeout=5):
+        return self.do_wait(EC.presence_of_element_located(locator), true_or_false_for_present_or_not, timeout)
 
-    def wait_until_element_is_clickable(self, element, true_or_false_for_clickable_or_not, timeout=5):
-        return self.do_wait(EC.element_to_be_clickable(element), true_or_false_for_clickable_or_not, timeout)
+    def wait_until_element_is_clickable(self, locator, true_or_false_for_clickable_or_not, timeout=5):
+        return self.do_wait(EC.element_to_be_clickable(locator), true_or_false_for_clickable_or_not, timeout)
 
-    def wait_until_element_is_visible(self, locator, true_or_false_for_visible_or_not, timeout=2):
+    def wait_until_element_is_visible(self, locator, true_or_false_for_visible_or_not, timeout=5):
         return self.do_wait(EC.visibility_of_element_located(locator), true_or_false_for_visible_or_not, timeout)
 
-    def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=2):
+    def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=5):
         return self.do_wait(EC.url_contains(url_sub_string), true_or_false_for_contains_or_not, timeout)
 
-    def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=2):
+    def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=5):
         return self.do_wait(EC.alert_is_present(), true_or_false_for_present_or_not, timeout)
 
     # element actions
     def pick_in_combobox(self, combobox_locator, item_value, true_to_hit_enter_after_tab=False):
         self.wait_until_element_is_present(combobox_locator, True, 4)
         combobox_element = self.driver.find_element(*combobox_locator)
-        combobox_element.click()
+        combobox_locator_click_result = False
+        i = 0
+        while i < 5 and combobox_locator_click_result is not True:
+            try:
+                combobox_element.click()
+                combobox_locator_click_result = True
+            except Exception as e:
+                print(e)
+                combobox_locator_click_result = False
+            i += 1
         combobox_element_input = combobox_element.find_element_by_css_selector("input")
-        # it is crutch, I know
-        for i in range(15):
-            combobox_element_input.send_keys(Keys.DELETE)
-        for i in range(15):
-            combobox_element_input.send_keys(Keys.BACKSPACE)
+        combobox_input_click_result = False
+        j = 0
+        while j < 5 and combobox_input_click_result is not True:
+            try:
+                combobox_element_input.click()
+                combobox_input_click_result = True
+            except Exception as e:
+                print(e)
+                combobox_input_click_result = False
+            j += 1
+        combobox_input_clear_result = False
+        k = 0
+        while k < 5 and combobox_input_clear_result is not True:
+            try:
+                # it is crutch, I know
+                for combo in range(15):
+                    combobox_element_input.send_keys(Keys.DELETE)
+                for combo in range(15):
+                    combobox_element_input.send_keys(Keys.BACKSPACE)
+                combobox_input_clear_result = True
+            except Exception as e:
+                print(e)
+                combobox_input_clear_result = False
+            k += 1
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
         if true_to_hit_enter_after_tab:

@@ -25,7 +25,7 @@ class IssueDetailsFragment(BasePageObject):
     DELETE_ISSUE_DIALOG = (By.ID, "delete-issue-dialog")
     DELETE_ISSUE_DIALOG_SUBMIT = (By.ID, "delete-issue-submit")
     DELETE_ISSUE_DIALOG_CANCEL = (By.ID, "delete-issue-cancel")
-    LAST_APPEARED_ELEMENT = (By.ID, " .issue-drop-zone__text")
+    LAST_APPEARED_ELEMENT = (By.CSS_SELECTOR, " .issue-drop-zone__text")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -40,7 +40,8 @@ class IssueDetailsFragment(BasePageObject):
     def get_issue_summary_error(self):
         try:
             return self.driver.find_element(*self.ISSUE_SUMMARY_ERROR).text
-        except:
+        except Exception as e:
+            print(e)
             return None
 
     def get_issue_priority(self):
@@ -67,6 +68,7 @@ class IssueDetailsFragment(BasePageObject):
         self.driver.find_element(*self.MORE_DROP_DELETE_ISSUE_ITEM).click()
 
     def click_summary_element(self):
+        self.wait_until_element_is_present(self.ISSUE_SUMMARY, True, 2)
         self.driver.find_element(*self.ISSUE_SUMMARY).click()
         self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True)
 

@@ -19,6 +19,7 @@ class TestCreateIssue:
         self.dashboard = DashboardPageObject(self.driver)
 
     def teardown_class(self):
+        print(self.created_issues)
         for issue in self.created_issues:
             self.driver.fullscreen_window()
             self.browse_issue_page = BrowseIssuePageObject(self.driver, issue)
@@ -26,7 +27,8 @@ class TestCreateIssue:
             self.browse_issue_page.issue_details.delete_issue()
         try:
             self.driver.close()
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     def setup_method(self):
@@ -43,13 +45,14 @@ class TestCreateIssue:
             self.create_issue_modal.cancel_creation()
 
     @allure.title("JIRA. Create issue - positive (no fixtures)")
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
-            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) Without Description", None, "Medium", None, True),
-            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) With Description", "*Test description*",
+            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) Without Description (no fixtures)", None, "Medium", None, True),
+            ("Webinar (WEBINAR)", "Bug", "Test summary (QA) With Description (no fixtures)", "*Test description*",
              "Medium", None, True),
             ("Webinar (WEBINAR)", "Bug",
-             "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345",
+             "fixtures_no_3456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345",
              None, "Medium", None, True),
         ])
     def test_create_issue_positive(self, project, issue_type, summary, description, priority, error_message_expect,
@@ -67,11 +70,12 @@ class TestCreateIssue:
             assert self.create_issue_modal.get_issue_summary_error_message() == error_message_expect
 
     @allure.title("JIRA. Create issue - negative (no fixtures)")
+    @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
             ("Webinar (WEBINAR)", "Bug", None, None, "Medium", "You must specify a summary of the issue.", False),
             ("Webinar (WEBINAR)", "Bug",
-             "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456",
+             "fixtures_no_3456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456",
              None, "Medium", "Summary must be less than 255 characters.", False),
         ])
     def test_create_issue_negative(self, project, issue_type, summary, description, priority, error_message_expect,

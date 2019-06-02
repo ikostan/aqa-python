@@ -57,6 +57,9 @@ class RestIssueCreate(RestIssue):
         return r.json()
 
     def create_issues(self, list_of_tuples):
+        created_issue_ids = []
         if len(list_of_tuples) > 0:
             for one_tuple in list_of_tuples:
-                self.create_issue(one_tuple[0], one_tuple[1], one_tuple[2], one_tuple[3], one_tuple[4], one_tuple[5])
+                r = self.create_issue(one_tuple[0], one_tuple[1], one_tuple[2], one_tuple[3], one_tuple[4], one_tuple[5])
+                created_issue_ids.append(r["id"])
+        return created_issue_ids

@@ -17,7 +17,8 @@ def login_and_get_driver():
     try:
         driver.close()
         # driver.quit()
-    except:
+    except Exception as e:
+        print(e)
         pass
 
 
@@ -26,9 +27,9 @@ def rest_set_session():
     login = RestSessionLogin()
     cookie = login.start_session()
     yield cookie
-    search = RestSearchSearch(cookie)
-    delete = RestIssueDelete(cookie)
-    delete.delete_issues(search.get_all_my_issue_ids())
+    # search = RestSearchSearch(cookie)
+    # delete = RestIssueDelete(cookie)
+    # delete.delete_issues(search.get_all_my_issue_ids())
 
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
