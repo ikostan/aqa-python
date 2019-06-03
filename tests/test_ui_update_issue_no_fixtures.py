@@ -44,7 +44,6 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.update_summary(self.ISSUE_SUMMARY_NEW)
             self.browse_issue_page.issue_details.select_priority(self.ISSUE_PRIORITY_NEW)
             self.browse_issue_page.issue_details.select_assignee(self.ISSUE_ASSIGNEE_NEW)
-            self.browse_issue_page.open_page_by_url()
 
     def teardown_class(self):
         for issue in self.created_issues:
@@ -61,16 +60,19 @@ class TestUpdateIssue:
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue summary is updated")
     def test_update_issue_summary(self):
+        self.browse_issue_page.open_page_by_url()
         assert self.browse_issue_page.issue_details.get_issue_summary() == self.ISSUE_SUMMARY_NEW
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue priority is updated")
     def test_update_issue_priority(self):
+        self.browse_issue_page.open_page_by_url()
         assert self.browse_issue_page.issue_details.get_issue_priority() == self.ISSUE_PRIORITY_NEW
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue assignee is updated")
     def test_update_issue_assignee(self):
+        self.browse_issue_page.open_page_by_url()
         assert self.browse_issue_page.issue_details.get_issue_assignee() == self.ISSUE_ASSIGNEE_NEW
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
