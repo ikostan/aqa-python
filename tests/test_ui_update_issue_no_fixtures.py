@@ -13,7 +13,7 @@ class TestUpdateIssue:
     created_issues = []
     ISSUE_PROJECT = "Webinar (WEBINAR)"
     ISSUE_TYPE = "Bug"
-    ISSUE_SUMMARY = "Issue Should Be Updated #WDN1"
+    ISSUE_SUMMARY_BASE = "Issue Should Be Updated #WDN1"
     ISSUE_DESCRIPTION = "Description of the <Issue Should Be Updated #WDN1>"
     ISSUE_PRIORITY = "Medium"
 
@@ -23,27 +23,6 @@ class TestUpdateIssue:
             self.login = LoginPageObject(self.driver)
             self.login.enter_site_as_test_user()
             self.dashboard = DashboardPageObject(self.driver)
-            self.dashboard.open_page()
-            self.modal = CreateIssueModal(self.driver)
-            i = 0
-            while i < 3 and self.modal.is_modal_existing() is False:
-                self.dashboard.header_toolbar.click_create_button()
-                self.modal.wait_until_modal_is_opened(5)
-                i += 1
-            self.modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, self.ISSUE_SUMMARY,
-                                                        self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
-            self.dashboard.flag.wait_until_flag_is_shown()
-            self.created_issues.append(self.dashboard.flag.get_new_issue_data()["link"])
-            self.modal.wait_until_modal_is_not_opened(2)
-        with allure.step("Open the issue page and update it by valid values"):
-            self.browse_issue_page = BrowseIssuePageObject(self.driver, self.created_issues[0])
-            self.browse_issue_page.open_page_by_url()
-            self.ISSUE_SUMMARY_NEW = "Issue That Has Been Updated #WDN1"
-            self.ISSUE_PRIORITY_NEW = "Highest"
-            self.ISSUE_ASSIGNEE_NEW = self.browse_issue_page.issue_details.USER_LOGIN
-            self.browse_issue_page.issue_details.update_summary(self.ISSUE_SUMMARY_NEW)
-            self.browse_issue_page.issue_details.select_priority(self.ISSUE_PRIORITY_NEW)
-            self.browse_issue_page.issue_details.select_assignee(self.ISSUE_ASSIGNEE_NEW)
 
     def teardown_class(self):
         for issue in self.created_issues:
@@ -57,30 +36,69 @@ class TestUpdateIssue:
             print(e)
             pass
 
+    def create_original_issue(self, original_summary):
+        with allure.step("Open the dashboard page"):
+            self.dashboard.open_page()
+        with allure.step("Open the Create issue modal"):
+            self.modal = CreateIssueModal(self.driver)
+            i = 0
+            while i < 3 and self.modal.is_modal_existing() is False:
+                self.dashboard.header_toolbar.click_create_button()
+                self.modal.wait_until_modal_is_opened(5)
+                i += 1
+        with allure.step("Create the new original issue"):
+            self.modal.populate_fields_and_click_create(self.ISSUE_PROJECT, self.ISSUE_TYPE, original_summary,
+                                                        self.ISSUE_DESCRIPTION, self.ISSUE_PRIORITY)
+            self.dashboard.flag.wait_until_flag_is_shown()
+            new_issue_link = self.dashboard.flag.get_new_issue_data()["link"]
+            self.created_issues.append(new_issue_link)
+            self.modal.wait_until_modal_is_not_opened(10)
+        with allure.step("Open the issue page and update it by valid values"):
+            self.browse_issue_page = BrowseIssuePageObject(self.driver, new_issue_link)
+            self.browse_issue_page.open_page_by_url()
+
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue summary is updated")
     def test_update_issue_summary(self):
-        self.browse_issue_page.open_page_by_url()
-        assert self.browse_issue_page.issue_details.get_issue_summary() == self.ISSUE_SUMMARY_NEW
+        with allure.step("Create original issue"):
+            original_summary = self.ISSUE_SUMMARY_BASE + " (update summary)"
+            self.create_original_issue(original_summary)
+        with allure.step("Update issue"):
+            issue_summary_new = "Issue That Has Been Updated #WDN1"
+            self.browse_issue_page.issue_details.update_summary(issue_summary_new)
+        with allure.step("Check update"):
+            assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_new
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue priority is updated")
     def test_update_issue_priority(self):
-        self.browse_issue_page.open_page_by_url()
-        assert self.browse_issue_page.issue_details.get_issue_priority() == self.ISSUE_PRIORITY_NEW
+        with allure.step("Create original issue"):
+            original_summary = self.ISSUE_SUMMARY_BASE + " (update priority)"
+            self.create_original_issue(original_summary)
+        with allure.step("Update issue"):
+            issue_priority_new = "Highest"
+            self.browse_issue_page.issue_details.select_priority(issue_priority_new)
+        with allure.step("Check update"):
+            assert self.browse_issue_page.issue_details.get_issue_priority() == issue_priority_new
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue assignee is updated")
     def test_update_issue_assignee(self):
-        self.browse_issue_page.open_page_by_url()
-        assert self.browse_issue_page.issue_details.get_issue_assignee() == self.ISSUE_ASSIGNEE_NEW
+        with allure.step("Create original issue"):
+            original_summary = self.ISSUE_SUMMARY_BASE + " (update assignee)"
+            self.create_original_issue(original_summary)
+        with allure.step("Update issue"):
+            issue_assignee_new = self.browse_issue_page.issue_details.USER_LOGIN
+            self.browse_issue_page.issue_details.select_assignee(issue_assignee_new)
+        with allure.step("Check update"):
+            assert self.browse_issue_page.issue_details.get_issue_assignee() == issue_assignee_new
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue summary is not updated if inputted string is longer than 256 char")
     def test_update_issue_summary_256(self):
-        with allure.step("Open the issue page and get original summary"):
-            self.browse_issue_page.open_page_by_url()
-            issue_summary_original = self.browse_issue_page.issue_details.get_issue_summary()
+        with allure.step("Create original issue"):
+            original_summary = self.ISSUE_SUMMARY_BASE + " (update summary by 256 chars name)"
+            self.create_original_issue(original_summary)
         with allure.step("Replace name by empty value"):
             issue_summary_new = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456"
             self.browse_issue_page.issue_details.update_summary(issue_summary_new)
@@ -88,22 +106,22 @@ class TestUpdateIssue:
             error_message = self.browse_issue_page.issue_details.get_issue_summary_error()
             self.browse_issue_page.issue_details.click_summary_cancel()
         with allure.step("Check the original summary value wasn't changed"):
-            assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_original
+            assert self.browse_issue_page.issue_details.get_issue_summary() == original_summary
         with allure.step("Check the proper error message is shown"):
             assert error_message == "Summary must be less than 255 characters."
 
     @pytest.mark.flaky(reruns=3, reruns_delay=3)
     @allure.title("JIRA. Issue summary is not updated if new value is empty string")
     def test_update_issue_summary_empty(self):
-        with allure.step("Open the issue page and get original summary"):
-            self.browse_issue_page.open_page_by_url()
-            issue_summary_original = self.browse_issue_page.issue_details.get_issue_summary()
+        with allure.step("Create original issue"):
+            original_summary = self.ISSUE_SUMMARY_BASE + " (update summary by empty value)"
+            self.create_original_issue(original_summary)
         with allure.step("Replace name by empty value"):
             self.browse_issue_page.issue_details.update_summary("", True)
         with allure.step("Get error message and cancel updates"):
             error_message = self.browse_issue_page.issue_details.get_issue_summary_error()
             self.browse_issue_page.issue_details.click_summary_cancel()
         with allure.step("Check the original summary value wasn't changed"):
-            assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_original
+            assert self.browse_issue_page.issue_details.get_issue_summary() == original_summary
         with allure.step("Check the proper error message is shown"):
             assert error_message == "You must specify a summary of the issue."
