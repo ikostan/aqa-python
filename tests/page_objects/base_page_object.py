@@ -39,17 +39,8 @@ class BasePageObject:
         return self.driver.current_url
 
     # element states
-    def is_element_displayed(self, element, timeout=0):
-        self.driver.implicitly_wait(timeout)
-        try:
-            self.driver.find_element(*element)
-            result = True
-        except:
-            result = False
-        finally:
-            method_result = result
-        self.driver.implicitly_wait(self.DEF_TIMEOUT)
-        return method_result
+    def is_element_displayed(self, locator, timeout=1):
+        return self.wait_until_element_is_present(locator, True, timeout)
 
     def is_string_contains_substring(self, string, sub_string):
         if sub_string in string:
@@ -72,38 +63,44 @@ class BasePageObject:
             elif not true_or_false_for_until_or_not:
                 WebDriverWait(self.driver, timeout).until_not(expected_condition)
                 result = True
-        except:
+        except Exception as e:
+            print(e)
             result = False
         finally:
             method_result = result
         self.driver.implicitly_wait(self.DEF_TIMEOUT)
         return method_result
 
-    def wait_until_element_is_present(self, element, true_or_false_for_present_or_not, timeout=5):
-        return self.do_wait(EC.presence_of_element_located(element), true_or_false_for_present_or_not, timeout)
+    def wait_until_element_is_present(self, locator, true_or_false_for_present_or_not, timeout=5):
+        return self.do_wait(EC.presence_of_element_located(locator), true_or_false_for_present_or_not, timeout)
 
-    def wait_until_element_is_clickable(self, element, true_or_false_for_clickable_or_not, timeout=5):
-        return self.do_wait(EC.element_to_be_clickable(element), true_or_false_for_clickable_or_not, timeout)
+    def wait_until_element_is_clickable(self, locator, true_or_false_for_clickable_or_not, timeout=5):
+        return self.do_wait(EC.element_to_be_clickable(locator), true_or_false_for_clickable_or_not, timeout)
 
-    def wait_until_element_is_visible(self, locator, true_or_false_for_visible_or_not, timeout=2):
+    def wait_until_element_is_visible(self, locator, true_or_false_for_visible_or_not, timeout=5):
         return self.do_wait(EC.visibility_of_element_located(locator), true_or_false_for_visible_or_not, timeout)
 
-    def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=2):
+    def wait_until_url_contains(self, url_sub_string, true_or_false_for_contains_or_not, timeout=5):
         return self.do_wait(EC.url_contains(url_sub_string), true_or_false_for_contains_or_not, timeout)
 
-    def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=2):
+    def wait_until_alert_is_present(self, true_or_false_for_present_or_not, timeout=5):
         return self.do_wait(EC.alert_is_present(), true_or_false_for_present_or_not, timeout)
 
+    def wait_until_element_attribute_is(self, locator, attribute, value, true_or_false_for_is_or_is_not, timeout=5):
+        return self.do_wait(ElementAttributeIs(locator, attribute, value), true_or_false_for_is_or_is_not, timeout)
+
     # element actions
-    def pick_in_combobox(self, combobox_locator, item_value, true_to_hit_enter_after_tab=False):
-        self.wait_until_element_is_present(combobox_locator, True, 4)
-        combobox_element = self.driver.find_element(*combobox_locator)
-        combobox_element.click()
-        combobox_element_input = combobox_element.find_element_by_css_selector("input")
+    def input_into_combobox(self, combobox_input_locator, item_value, true_to_wait_for_dropdown=True,
+                            true_to_hit_enter_after_tab=False):
+        self.wait_until_element_is_present(combobox_input_locator, True, 5)
+        combobox_element_input = self.driver.find_element(*combobox_input_locator)
+        combobox_element_input.click()
+        if true_to_wait_for_dropdown:
+            self.wait_until_element_attribute_is(combobox_input_locator, "aria-expanded", "true", True, 2)
         # it is crutch, I know
-        for i in range(15):
+        for combo in range(15):
             combobox_element_input.send_keys(Keys.DELETE)
-        for i in range(15):
+        for combo in range(15):
             combobox_element_input.send_keys(Keys.BACKSPACE)
         combobox_element_input.send_keys(item_value)
         combobox_element_input.send_keys(Keys.TAB)
@@ -114,3 +111,17 @@ class BasePageObject:
         if self.wait_until_alert_is_present(True, timeout):
             self.driver.switch_to.alert.accept()
         self.wait_until_alert_is_present(False, timeout)
+
+
+class ElementAttributeIs(object):
+    def __init__(self, locator, attribute_name, expected_attribute_value):
+        self.locator = locator
+        self.attribute = attribute_name
+        self.value = expected_attribute_value
+
+    def __call__(self, driver):
+        element = driver.find_element(*self.locator)
+        if element.get_attribute(self.attribute) == self.value:
+            return element
+        else:
+            return False
