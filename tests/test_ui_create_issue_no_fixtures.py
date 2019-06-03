@@ -43,7 +43,7 @@ class TestCreateIssue:
         if self.modal.is_modal_existing():
             self.modal.cancel_creation()
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.flaky(reruns=2, reruns_delay=3)
     @allure.title("JIRA. Create issue - positive (no fixtures)")
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
@@ -68,7 +68,7 @@ class TestCreateIssue:
         with allure.step("Check the error message existing"):
             assert self.modal.get_issue_summary_error_message() is error_message_expect
 
-    @pytest.mark.flaky(reruns=3, reruns_delay=3)
+    @pytest.mark.flaky(reruns=2, reruns_delay=3)
     @allure.title("JIRA. Create issue - negative (no fixtures)")
     @pytest.mark.parametrize(
         "project, issue_type, summary, description, priority, error_message_expect, is_modal_closed_expect", [
