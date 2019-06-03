@@ -55,7 +55,7 @@ jobs:
             . venv/bin/activate
             mkdir allure-results/
             mkdir allure-report/
-            pytest --alluredir=allure-results
+            pytest -n4 --alluredir=allure-results
           when: always
 
       - store_test_results:
