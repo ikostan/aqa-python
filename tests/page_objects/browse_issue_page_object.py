@@ -37,6 +37,6 @@ class BrowseIssuePageObject(BasePageObject):
         if url is not None:
             print("---open_page_by_url IF", url)
             self.page_url_full = url
-        print("---open_page_by_url IF OUT", url)
+        print("---open_page_by_url IF OUT", self.page_url_full)
         self.driver.get(self.page_url_full)
         self.wait_until_page_is_opened()

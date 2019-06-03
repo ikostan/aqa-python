@@ -59,6 +59,7 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.update_summary(issue_summary_new)
         with allure.step("Refresh the page"):
             self.driver.refresh()
+            self.browse_issue_page.wait_until_page_is_opened()
         with allure.step("Check the updated summary value"):
             assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_new
 
@@ -70,6 +71,7 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.select_priority(issue_priority_new)
         with allure.step("Refresh the page"):
             self.driver.refresh()
+            self.browse_issue_page.wait_until_page_is_opened()
         with allure.step("Check the updated priority value"):
             assert self.browse_issue_page.issue_details.get_issue_priority() == issue_priority_new
 
@@ -81,6 +83,7 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.select_assignee(issue_assignee_new)
         with allure.step("Refresh the page"):
             self.driver.refresh()
+            self.browse_issue_page.wait_until_page_is_opened()
         with allure.step("Check the updated assignee value"):
             assert self.browse_issue_page.issue_details.get_issue_assignee() == issue_assignee_new
 
@@ -95,6 +98,7 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.click_summary_cancel()
         with allure.step("Refresh the page"):
             self.driver.refresh()
+            self.browse_issue_page.wait_until_page_is_opened()
         with allure.step("Check the original summary value wasn't changed"):
             assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_original
         with allure.step("Check the proper error message is shown"):
@@ -111,6 +115,7 @@ class TestUpdateIssue:
             self.browse_issue_page.issue_details.click_summary_cancel()
         with allure.step("Refresh the page"):
             self.driver.refresh()
+            self.browse_issue_page.wait_until_page_is_opened()
         with allure.step("Check the original summary value wasn't changed"):
             assert self.browse_issue_page.issue_details.get_issue_summary() == issue_summary_original
         with allure.step("Check the proper error message is shown"):
