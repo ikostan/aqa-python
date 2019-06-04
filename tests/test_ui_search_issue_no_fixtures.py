@@ -51,7 +51,7 @@ class TestSearchIssue:
     def setup_method(self):
         self.dashboard.open_page()
 
-    @pytest.mark.flaky(reruns=2, reruns_delay=3)
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @allure.title("JIRA. Issue is found")
     @pytest.mark.parametrize("case_method", [None, "lower", "upper"])
     def test_search_issue(self, case_method):
@@ -70,7 +70,7 @@ class TestSearchIssue:
         with allure.step("Check the found issue has correct summary"):
             assert self.search_page.issue.get_issue_summary() == self.ISSUE_SUMMARY
 
-    @pytest.mark.flaky(reruns=2, reruns_delay=3)
+    @pytest.mark.flaky(reruns=3, reruns_delay=5)
     @allure.title("JIRA. Issue is not found (no result message is got)")
     def test_search_issue_not_found(self):
         with allure.step("Populate search field and submit"):
