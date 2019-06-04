@@ -29,7 +29,7 @@ class BrowseIssuePageObject(BasePageObject):
     def get_page_url_part_with_project(self):
         return self.page_url_part_with_project
 
-    def wait_until_page_is_opened(self, timeout=2):
+    def wait_until_page_is_opened(self, timeout=10):
         self.wait_until_url_contains(self.page_url_part_with_project, True, timeout)
         self.issue_details.wait_until_panel_is_opened(timeout)
 

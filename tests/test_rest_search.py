@@ -2,11 +2,11 @@ import pytest
 import allure
 from tests.rest.rest_issue_create import RestIssueCreate
 from tests.rest.rest_search_search import RestSearchSearch
+from tests.rest.rest_issue_delete import RestIssueDelete
 
 
 @pytest.mark.rest
 class TestRestSearch:
-
     list_of_issues = [
         ("PythonAQA: Issue For Searching 01", "Bug", None, "Description 01", None, "Medium"),
         ("PythonAQA: Issue For Searching 02", "Bug", None, None, None, "Medium"),
@@ -21,11 +21,14 @@ class TestRestSearch:
     ]
 
     @pytest.fixture(scope="module", autouse=True)
-    def search(self, rest_set_session):
+    def rest_client(self, rest_set_session):
         cookie = rest_set_session
         create = RestIssueCreate(cookie)
-        create.create_issues(self.list_of_issues)
-        return RestSearchSearch(cookie)
+        created_issue_ids = create.create_issues(self.list_of_issues)
+        yield RestSearchSearch(cookie)
+        rest_delete = RestIssueDelete(cookie)
+        rest_delete.delete_issues(created_issue_ids)
+
 
     @allure.title("REST JIRA. Search")
     @pytest.mark.parametrize("jql, results_number, status_code",
@@ -34,9 +37,9 @@ class TestRestSearch:
                                  ("text ~ 'PythonAQA: Issue For Searching'", 10, 200),
                                  ("text ~ 'SomeIncorrectValueThatNeverWillBeFound'", 0, 200),
                              ])
-    def test_search_issue(self, search, jql, results_number, status_code):
+    def test_search_issue(self, rest_client, jql, results_number, status_code):
         with allure.step("Send request"):
-            r = search.rest_jira_search_issues(jql, results_number)
+            r = rest_client.rest_jira_search_issues(jql, results_number)
         with allure.step("Check the status code"):
             assert r.status_code == status_code
         with allure.step("Check the nuber of found issues"):

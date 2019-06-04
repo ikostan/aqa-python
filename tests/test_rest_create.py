@@ -2,15 +2,21 @@ import pytest
 import allure
 from tests.rest.rest_issue_create import RestIssueCreate
 from tests.rest.rest_issue_get import RestIssueGet
+from tests.rest.rest_issue_delete import RestIssueDelete
 
 
 @pytest.mark.rest
 class TestRestCreate:
 
+    created_issue_ids = []
+
     @pytest.fixture(scope="module", autouse=True)
-    def create(self, rest_set_session):
+    def rest_client(self, rest_set_session):
         cookie = rest_set_session
-        return {"create": RestIssueCreate(cookie), "get": RestIssueGet(cookie)}
+        yield {"create": RestIssueCreate(cookie), "get": RestIssueGet(cookie)}
+        rest_delete = RestIssueDelete(cookie)
+        rest_delete.delete_issues(self.created_issue_ids)
+
 
     @allure.title("REST JIRA. Create (positive)")
     @pytest.mark.parametrize("summary, issue_type, project, description, assignee, priority, status",
@@ -21,18 +27,20 @@ class TestRestCreate:
                                  ("123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345",
                                  "Bug", "default", None, None, None, 201),
                              ])
-    def test_create_issue_positive(self, create, summary, issue_type, project, description, assignee, priority, status):
+    def test_create_issue_positive(self, rest_client, summary, issue_type, project, description, assignee, priority, status):
         with allure.step("Setup request"):
-            rest_create = create["create"]
-            rest_get = create["get"]
+            rest_create = rest_client["create"]
+            rest_get = rest_client["get"]
             if project == "default": project = rest_create.JIRA_PROJECT_KEY
             if assignee == "default": assignee = rest_create.JIRA_USER_NAME
         with allure.step("Send request"):
             r = rest_create.rest_jira_create_issue(summary, issue_type, project, description, assignee, priority)
+            issue_id = r.json()["id"]
+            self.created_issue_ids.append(issue_id)
         with allure.step("Check the status code"):
             assert r.status_code == status
         with allure.step("Check the created values"):
-            issue = rest_get.get_issue(r.json()["id"])
+            issue = rest_get.get_issue(issue_id)
             assert issue["summary"] == summary
             assert issue["issue_type"] == issue_type
             assert issue["project"] == project
@@ -49,9 +57,9 @@ class TestRestCreate:
                                  (None, "Bug", "default", None, None, None, 400),
                                  ("Test Issue Summary7", None, "default", None, None, None, 400),
                              ])
-    def test_create_issue_negative(self, create, summary, issue_type, project, description, assignee, priority, status):
+    def test_create_issue_negative(self, rest_client, summary, issue_type, project, description, assignee, priority, status):
         with allure.step("Setup request"):
-            rest_create = create["create"]
+            rest_create = rest_client["create"]
             if project == "default": project = rest_create.JIRA_PROJECT_KEY
             if assignee == "default": assignee = rest_create.JIRA_USER_NAME
         with allure.step("Send request"):

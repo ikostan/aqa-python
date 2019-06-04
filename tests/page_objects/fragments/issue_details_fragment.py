@@ -14,10 +14,10 @@ class IssueDetailsFragment(BasePageObject):
     ISSUE_SUMMARY_ERROR = (By.CSS_SELECTOR, " .error.inline-edit-error")
     ISSUE_SUMMARY_CANCEL = (By.CSS_SELECTOR, "#summary-val .aui-button.cancel")
     ISSUE_PRIORITY = (By.ID, "priority-val")
-    ISSUE_PRIORITY_FORM = (By.ID, "priority-form")
+    ISSUE_PRIORITY_INPUT = (By.ID, "priority-field")
     ISSUE_PRIORITY_SPINNER = (By.CSS_SELECTOR, "#priority-form .throbber")
     ISSUE_ASSIGNEE = (By.ID, "assignee-val")
-    ISSUE_ASSIGNEE_FORM = (By.ID, "assignee-single-select")
+    ISSUE_ASSIGNEE_INPUT = (By.ID, "assignee-field")
     ISSUE_ASSIGNEE_SPINNER = (By.CSS_SELECTOR, "#assignee-form .throbber")
     MORE_BUTTON = (By.ID, "opsbar-operations_more")
     MORE_DROP = (By.ID, "opsbar-operations_more_drop")
@@ -25,7 +25,7 @@ class IssueDetailsFragment(BasePageObject):
     DELETE_ISSUE_DIALOG = (By.ID, "delete-issue-dialog")
     DELETE_ISSUE_DIALOG_SUBMIT = (By.ID, "delete-issue-submit")
     DELETE_ISSUE_DIALOG_CANCEL = (By.ID, "delete-issue-cancel")
-    LAST_APPEARED_ELEMENT = (By.ID, " .issue-drop-zone__text")
+    LAST_APPEARED_ELEMENT = (By.CSS_SELECTOR, " .issue-drop-zone__text")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -40,7 +40,8 @@ class IssueDetailsFragment(BasePageObject):
     def get_issue_summary_error(self):
         try:
             return self.driver.find_element(*self.ISSUE_SUMMARY_ERROR).text
-        except:
+        except Exception as e:
+            print(e)
             return None
 
     def get_issue_priority(self):
@@ -67,6 +68,7 @@ class IssueDetailsFragment(BasePageObject):
         self.driver.find_element(*self.MORE_DROP_DELETE_ISSUE_ITEM).click()
 
     def click_summary_element(self):
+        self.wait_until_element_is_present(self.ISSUE_SUMMARY, True, 2)
         self.driver.find_element(*self.ISSUE_SUMMARY).click()
         self.wait_until_element_is_present(self.ISSUE_SUMMARY_INPUT, True)
 
@@ -75,12 +77,14 @@ class IssueDetailsFragment(BasePageObject):
         self.driver.find_element(*self.ISSUE_SUMMARY_CANCEL).click()
 
     def click_priority_element(self):
+        self.wait_until_element_is_present(self.ISSUE_PRIORITY, True, 2)
         self.driver.find_element(*self.ISSUE_PRIORITY).click()
-        self.wait_until_element_is_present(self.ISSUE_PRIORITY_FORM, True, 2)
+        self.wait_until_element_is_present(self.ISSUE_PRIORITY_INPUT, True, 2)
 
     def click_assignee_element(self):
+        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE, True, 2)
         self.driver.find_element(*self.ISSUE_ASSIGNEE).click()
-        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_FORM, True, 2)
+        self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_INPUT, True, 2)
 
     def update_summary(self, summary_name=None, true_if_allow_empty_input=False):
         if summary_name is not None:
@@ -91,18 +95,21 @@ class IssueDetailsFragment(BasePageObject):
                 summary_input.send_keys(summary_name)
                 summary_input.send_keys(Keys.ENTER)
                 if summary_name != "" and len(summary_name) < 256:
+                    self.wait_until_element_attribute_is(self.ISSUE_SUMMARY_INPUT, "disabled", "disabled", False, 5)
                     self.wait_until_element_is_present(self.ISSUE_SUMMARY_SPINNER, False)
 
     def select_priority(self, priority_name=None):
         if priority_name is not None and priority_name != "":
             self.click_priority_element()
-            self.pick_in_combobox(self.ISSUE_PRIORITY_FORM, priority_name, True)
+            self.input_into_combobox(self.ISSUE_PRIORITY_INPUT, priority_name, True, True)
+            self.wait_until_element_attribute_is(self.ISSUE_PRIORITY_INPUT, "aria-disabled", "true", False, 5)
             self.wait_until_element_is_present(self.ISSUE_PRIORITY_SPINNER, False)
 
     def select_assignee(self, assignee_name=None):
         if assignee_name is not None and assignee_name != "":
             self.click_assignee_element()
-            self.pick_in_combobox(self.ISSUE_ASSIGNEE_FORM, assignee_name, True)
+            self.input_into_combobox(self.ISSUE_ASSIGNEE_INPUT, assignee_name, False, True)
+            self.wait_until_element_attribute_is(self.ISSUE_ASSIGNEE_INPUT, "aria-disabled", "true", False, 5)
             self.wait_until_element_is_present(self.ISSUE_ASSIGNEE_SPINNER, False)
 
     def delete_issue(self):
