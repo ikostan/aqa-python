@@ -33,3 +33,9 @@ def pytest_runtest_makereport(item):
                               attachment_type=allure.attachment_type.PNG)
             except Exception as e:
                 print(e)
+
+
+@pytest.fixture(scope="session")
+def conf_fixture():
+    almost_driver = "DRIVER"
+    yield almost_driver
